@@ -102,6 +102,7 @@ export function usePeerjsMedia(videoId: string) {
   watch(calling, (value) => {
     if (callingTimeout) {
       clearTimeout(callingTimeout)
+      callingTimeout = null
     }
     if (value) {
       callingTimeout = setTimeout(() => {

@@ -6,7 +6,7 @@ declare module '#app' {
       init: (uid: string) => void
       end: () => void
       connected: Ref<boolean>
-      connections: DataConnection[]
+      connections: Map<string, DataConnection>
       readonly peer: Peer | null
     }
   }

@@ -2,7 +2,10 @@
   "name": "@bg-dev/nuxt-peerjs",
   "version": "0.0.3",
   "description": "Peerjs client for Nuxt",
-  "repository": "becem-gharbi/nuxt-peerjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/becem-gharbi/nuxt-peerjs.git"
+  },
   "license": "MIT",
   "type": "module",
   "exports": {

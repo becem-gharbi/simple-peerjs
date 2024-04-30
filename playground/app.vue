@@ -16,6 +16,9 @@
     <button @click="send(message)">
       Send
     </button>
+    <button @click="endConnection()">
+      End
+    </button>
     <h4>Data received: {{ dataReceived }}</h4>
     <hr>
 
@@ -44,7 +47,7 @@ import { useNuxtApp, ref, usePeerjsData, usePeerjsMedia } from '#imports'
 
 const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
-const { connect, rmPeerConnected, dataReceived, send } = usePeerjsData('connection 1')
+const { connect, rmPeerConnected, dataReceived, send, end: endConnection } = usePeerjsData('connection 1')
 const message = ref()
 const { call, answer, end, streaming, calling } = usePeerjsMedia('stream')
 </script>

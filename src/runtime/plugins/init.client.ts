@@ -19,7 +19,7 @@ export default defineNuxtPlugin({
      * Local Peer instance
      */
     let peer: null | Peer = null
-    const connections: DataConnection[] = []
+    const connections = new Map<string, DataConnection>()
 
     /**
      * Initiate the connection to the server.
@@ -39,7 +39,7 @@ export default defineNuxtPlugin({
         connected.value = false
       })
       peer.on('connection', (conn) => {
-        connections.push(conn)
+        connections.set(conn.label, conn)
       })
     }
 
@@ -48,8 +48,8 @@ export default defineNuxtPlugin({
      */
     function end() {
       if (peer?.destroyed === false) {
-        peer.removeAllListeners()
         peer.destroy()
+        connections.clear()
       }
     }
 
