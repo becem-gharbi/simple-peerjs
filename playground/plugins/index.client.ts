@@ -5,6 +5,7 @@ export default defineNuxtPlugin({
 
   setup() {
     const nuxtApp = useNuxtApp()
+
     nuxtApp.$peerjs.init(crypto.randomUUID())
   },
 })
