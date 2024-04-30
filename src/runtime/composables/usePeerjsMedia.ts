@@ -3,8 +3,10 @@ import { onMounted, ref, useNuxtApp, onUnmounted } from '#imports'
 
 export function usePeerjsMedia(videoId: string) {
   let rmMediaConnection: MediaConnection | null = null
+  let lcMediaConnection: MediaConnection | null = null
   let lcMediaStream: MediaStream | null = null
   let rmVideo: HTMLVideoElement | null = null
+
   const calling = ref(false)
   const streaming = ref(false)
 
@@ -15,29 +17,22 @@ export function usePeerjsMedia(videoId: string) {
   })
 
   async function call(rmPeerId: string) {
-    lcMediaStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-        width: {
-          ideal: window.innerWidth,
-        },
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-      },
-    })
+    lcMediaStream = await getUserMedia()
 
-    const call = $peerjs.peer?.call(rmPeerId, lcMediaStream)
+    lcMediaConnection = $peerjs.peer?.call(rmPeerId, lcMediaStream) ?? null
 
-    call?.on('stream', (stream) => {
+    calling.value = true
+
+    lcMediaConnection?.on('stream', (stream) => {
+      calling.value = false
       streaming.value = true
       if (rmVideo) {
         rmVideo.srcObject = stream
       }
     })
 
-    call?.on('close', () => {
+    lcMediaConnection?.on('close', () => {
+      stopUserMedia()
       streaming.value = false
       if (rmVideo) {
         rmVideo.srcObject = null
@@ -47,7 +42,39 @@ export function usePeerjsMedia(videoId: string) {
 
   async function answer() {
     calling.value = false
-    lcMediaStream = await navigator.mediaDevices.getUserMedia({
+    lcMediaStream = await getUserMedia()
+    rmMediaConnection?.answer(lcMediaStream)
+  }
+
+  $peerjs.peer?.on('call', function (call) {
+    rmMediaConnection = call
+
+    calling.value = true
+
+    rmMediaConnection.on('stream', (stream) => {
+      streaming.value = true
+      if (rmVideo) {
+        rmVideo.srcObject = stream
+      }
+    })
+    rmMediaConnection.on('close', () => {
+      stopUserMedia()
+      streaming.value = false
+      if (rmVideo) {
+        rmVideo.srcObject = null
+      }
+    })
+  })
+
+  function end() {
+    calling.value = false
+    lcMediaConnection?.close()
+    rmMediaConnection?.close()
+    stopUserMedia()
+  }
+
+  async function getUserMedia() {
+    return navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: 'user',
         width: {
@@ -59,40 +86,17 @@ export function usePeerjsMedia(videoId: string) {
         noiseSuppression: true,
       },
     })
-    rmMediaConnection?.answer(lcMediaStream)
   }
 
-  $peerjs.peer?.on('call', function (call) {
-    calling.value = true
-    rmMediaConnection = call
-
-    call.on('stream', (stream) => {
-      streaming.value = true
-      if (rmVideo) {
-        rmVideo.srcObject = stream
-      }
-    })
-    call.on('close', () => {
-      streaming.value = false
-      if (rmVideo) {
-        rmVideo.srcObject = null
-      }
-    })
-  })
-
-  function end() {
-    rmMediaConnection?.close()
-  }
-
-  onUnmounted(() => {
+  function stopUserMedia() {
     lcMediaStream?.getTracks().forEach((track) => {
       if (track.readyState === 'live') {
         track.stop()
       }
     })
-    rmMediaConnection?.removeAllListeners()
-    rmMediaConnection?.close()
-  })
+  }
+
+  onUnmounted(() => end())
 
   return { call, answer, end, streaming, calling }
 }

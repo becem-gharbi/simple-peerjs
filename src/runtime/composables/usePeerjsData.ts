@@ -7,7 +7,8 @@ import { useNuxtApp, ref, onUnmounted } from '#imports'
  */
 export function usePeerjsData(label: string) {
   let lcDataConnection: DataConnection | null = null
-  let interval: NodeJS.Timeout | null = null
+  let connectInterval: NodeJS.Timeout | null = null
+
   const rmPeerConnected = ref(false)
   const dataReceived = ref()
 
@@ -34,7 +35,7 @@ export function usePeerjsData(label: string) {
     })
 
     if (import.meta.client) {
-      interval = setInterval(() => {
+      connectInterval = setInterval(() => {
         if ($peerjs.connected.value && !rmPeerConnected.value) {
           connect(rmPeerId)
         }
@@ -43,10 +44,9 @@ export function usePeerjsData(label: string) {
   }
 
   onUnmounted(() => {
-    if (interval) {
-      clearInterval(interval)
+    if (connectInterval) {
+      clearInterval(connectInterval)
     }
-    lcDataConnection?.removeAllListeners()
     lcDataConnection?.close()
   })
 
