@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.3
+
+[compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.2...v0.0.3)
+
+### 🩹 Fixes
+
+- Capture connected connections globally ([c15d4df](https://github.com/becem-gharbi/nuxt-peerjs/commit/c15d4df))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.0.2
 
 [compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.1...v0.0.2)
