@@ -1,4 +1,3 @@
-import type { DataConnection } from 'peerjs'
 import { useNuxtApp, ref, onUnmounted } from '#imports'
 
 /**
@@ -8,13 +7,13 @@ import { useNuxtApp, ref, onUnmounted } from '#imports'
 export function usePeerjsData(label: string) {
   const connectIntervalMs = 5000
 
-  let lcDataConnection: DataConnection | null = null
+  const { $peerjs } = useNuxtApp()
+
+  let lcDataConnection = $peerjs.connections.find(conn => conn.label === label)
   let connectInterval: NodeJS.Timeout | null = null
 
   const rmPeerConnected = ref(false)
   const dataReceived = ref()
-
-  const { $peerjs } = useNuxtApp()
 
   $peerjs.peer?.on('connection', (conn) => {
     if (conn.label === label) {
@@ -23,6 +22,10 @@ export function usePeerjsData(label: string) {
   })
 
   function connect(rmPeerId: string) {
+    if (import.meta.server) {
+      return
+    }
+
     const rmDataConnection = $peerjs.peer?.connect(rmPeerId, {
       label,
     })
@@ -34,15 +37,17 @@ export function usePeerjsData(label: string) {
     })
     rmDataConnection?.on('close', () => {
       rmPeerConnected.value = false
+      const idx = $peerjs.connections.findIndex(conn => conn.label === label)
+      if (idx >= 0) {
+        $peerjs.connections.splice(idx, 1)
+      }
     })
 
-    if (import.meta.client) {
-      connectInterval = setInterval(() => {
-        if ($peerjs.connected.value && !rmPeerConnected.value) {
-          connect(rmPeerId)
-        }
-      }, connectIntervalMs)
-    }
+    connectInterval = setInterval(() => {
+      if ($peerjs.connected.value && !rmPeerConnected.value) {
+        connect(rmPeerId)
+      }
+    }, connectIntervalMs)
   }
 
   onUnmounted(() => {

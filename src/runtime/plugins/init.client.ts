@@ -1,4 +1,5 @@
 import { Peer } from 'peerjs'
+import type { DataConnection } from 'peerjs'
 import type { PublicConfig } from '../types'
 import { defineNuxtPlugin } from '#app'
 import { useState } from '#imports'
@@ -18,6 +19,7 @@ export default defineNuxtPlugin({
      * Local Peer instance
      */
     let peer: null | Peer = null
+    const connections: DataConnection[] = []
 
     /**
      * Initiate the connection to the server.
@@ -35,6 +37,9 @@ export default defineNuxtPlugin({
       })
       peer.on('disconnected', () => {
         connected.value = false
+      })
+      peer.on('connection', (conn) => {
+        connections.push(conn)
       })
     }
 
@@ -54,6 +59,7 @@ export default defineNuxtPlugin({
           init,
           end,
           connected,
+          connections,
           get peer() { return peer },
         },
       },
