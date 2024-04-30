@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v0.0.4
+
+[compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.3...v0.0.4)
+
+### 🩹 Fixes
+
+- Close remote connection on end ([036b2b0](https://github.com/becem-gharbi/nuxt-peerjs/commit/036b2b0))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.0.3
 
 [compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.2...v0.0.3)
