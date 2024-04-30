@@ -44,9 +44,9 @@ export function usePeerjsMedia(videoId: string) {
   }
 
   async function answer() {
-    calling.value = false
     lcMediaStream = await getUserMedia()
     rmMediaConnection?.answer(lcMediaStream)
+    calling.value = false
   }
 
   $peerjs.peer?.on('call', function (call) {
@@ -100,18 +100,16 @@ export function usePeerjsMedia(videoId: string) {
   }
 
   watch(calling, (value) => {
+    if (callingTimeout) {
+      clearTimeout(callingTimeout)
+    }
     if (value) {
       callingTimeout = setTimeout(() => {
         if (calling.value) {
           calling.value = false
+          stopUserMedia()
         }
       }, callingTimeoutMs)
-    }
-    else {
-      stopUserMedia()
-      if (callingTimeout) {
-        clearTimeout(callingTimeout)
-      }
     }
   })
 
