@@ -1,6 +1,6 @@
 {
   "name": "@bg-dev/nuxt-peerjs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Peerjs client for Nuxt",
   "repository": "becem-gharbi/nuxt-peerjs",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
+    "release": "npm run lint && npm run typecheck && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.11.2",
+    "defu": "^6.1.4",
     "peerjs": "^1.5.2"
   },
   "devDependencies": {
