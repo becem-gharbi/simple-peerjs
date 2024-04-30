@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v0.0.2
+
+[compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.1...v0.0.2)
+
+### 🩹 Fixes
+
+- Increase connectInterval ([3c22c7a](https://github.com/becem-gharbi/nuxt-peerjs/commit/3c22c7a))
+- Pre-bundle `sdp` ([cb1e97c](https://github.com/becem-gharbi/nuxt-peerjs/commit/cb1e97c))
+
+### 🌊 Types
+
+- Fix $peerjs ([8ebc2db](https://github.com/becem-gharbi/nuxt-peerjs/commit/8ebc2db))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.0.1
 
 
