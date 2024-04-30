@@ -6,7 +6,7 @@ import { useNuxtApp, ref, onUnmounted } from '#imports'
  * @param label unique key by which you want to identify this data connection.
  */
 export function usePeerjsData(label: string) {
-  const connectIntervalMs = 1000
+  const connectIntervalMs = 5000
 
   let lcDataConnection: DataConnection | null = null
   let connectInterval: NodeJS.Timeout | null = null
