@@ -49,5 +49,9 @@
     "typescript": "latest",
     "vitest": "^1.4.0",
     "vue-tsc": "^2.0.14"
+  },
+  "publishConfig": {
+    "tag": "latest",
+    "access": "public"
   }
 }
