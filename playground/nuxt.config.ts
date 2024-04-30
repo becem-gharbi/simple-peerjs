@@ -1,5 +1,9 @@
 export default defineNuxtConfig({
   modules: ['../src/module'],
-  myModule: {},
   devtools: { enabled: true },
+  peerjs: {
+    host: 'localhost',
+    path: '/peer',
+    port: 9000,
+  },
 })

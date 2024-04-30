@@ -19,14 +19,15 @@
   ],
   "scripts": {
     "prepack": "nuxt-module-build build",
-    "dev": "cd playground && npm run dev",
+    "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest watch",
-    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit"
+    "test:types": "vue-tsc --noEmit && cd playground && vue-tsc --noEmit",
+    "typecheck": "nuxi typecheck"
   },
   "dependencies": {
     "@nuxt/kit": "^3.11.2",
@@ -41,7 +42,6 @@
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@types/node": "^20.12.7",
     "changelogen": "^0.5.5",
-    "concurrently": "^8.2.2",
     "eslint": "^9.1.1",
     "nuxt": "^3.11.2",
     "peer": "^1.0.2",

@@ -1,11 +1,8 @@
-import { defineNuxtModule, addPlugin, createResolver } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir } from '@nuxt/kit'
 import { defu } from 'defu'
+import type { PublicConfig } from './runtime/types'
 
-export interface ModuleOptions {
-  host: string
-  path: string
-  port: number
-}
+export interface ModuleOptions extends PublicConfig {}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -22,8 +19,6 @@ export default defineNuxtModule<ModuleOptions>({
   setup(_options, _nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
-    addPlugin(resolve('./runtime/plugin'))
-
     _nuxt.options.runtimeConfig = defu(_nuxt.options.runtimeConfig, {
       app: {},
       public: {
@@ -34,5 +29,9 @@ export default defineNuxtModule<ModuleOptions>({
         },
       },
     })
+
+    addPlugin(resolve('./runtime/plugins/init.client'))
+    addImportsDir(resolve('./runtime/utils'))
+    addImportsDir(resolve('./runtime/composables'))
   },
 })

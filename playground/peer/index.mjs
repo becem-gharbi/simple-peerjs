@@ -1,5 +1,8 @@
 import { PeerServer } from 'peer'
 
-const peerServer = PeerServer({ port: 9000, path: '/peer' })
+const port = 9000
+const path = '/peer'
 
-peerServer.listen(() => console.log('Peer server running...'))
+const peerServer = PeerServer({ port, path })
+
+peerServer.listen(() => console.log(`✔️ 󠀠 Peer server running on port ${port}`))

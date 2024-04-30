@@ -3,7 +3,8 @@
   "name": "my-module-playground",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"node peer/index.mjs\" \"nuxi dev\"",
+    "dev": "nuxi dev",
+    "run:peer": "node peer/index.mjs",
     "build": "nuxi build",
     "generate": "nuxi generate"
   },
