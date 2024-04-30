@@ -17,14 +17,34 @@
       Send
     </button>
     <h4>Data received: {{ dataReceived }}</h4>
+    <hr>
+
+    <h4>Streaming: {{ streaming }}</h4>
+    <h4>Calling: {{ calling }}</h4>
+    <input v-model="rmPeerId">
+    <button @click="call(rmPeerId)">
+      Call
+    </button>
+    <button @click="answer()">
+      Answer
+    </button>
+    <button @click="end()">
+      Hang
+    </button>
+    <br>
+    <video
+      id="stream"
+      autoplay
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useNuxtApp, ref, usePeerjsData } from '#imports'
+import { useNuxtApp, ref, usePeerjsData, usePeerjsMedia } from '#imports'
 
 const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
 const { connect, rmPeerConnected, dataReceived, send } = usePeerjsData('connection 1')
 const message = ref()
+const { call, answer, end, streaming, calling } = usePeerjsMedia('stream')
 </script>

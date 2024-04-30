@@ -43,10 +43,11 @@ export function usePeerjsData(label: string) {
   }
 
   onUnmounted(() => {
-    lcDataConnection?.close()
     if (interval) {
       clearInterval(interval)
     }
+    lcDataConnection?.removeAllListeners()
+    lcDataConnection?.close()
   })
 
   async function send(data: unknown) {
