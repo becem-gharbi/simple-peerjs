@@ -1,11 +1,14 @@
 import type { MediaConnection } from 'peerjs'
-import { onMounted, ref, useNuxtApp, onUnmounted } from '#imports'
+import { onMounted, ref, useNuxtApp, onUnmounted, watch } from '#imports'
 
 export function usePeerjsMedia(videoId: string) {
+  const callingTimeoutMs = 10000
+
   let rmMediaConnection: MediaConnection | null = null
   let lcMediaConnection: MediaConnection | null = null
   let lcMediaStream: MediaStream | null = null
   let rmVideo: HTMLVideoElement | null = null
+  let callingTimeout: NodeJS.Timeout | null = null
 
   const calling = ref(false)
   const streaming = ref(false)
@@ -95,6 +98,22 @@ export function usePeerjsMedia(videoId: string) {
       }
     })
   }
+
+  watch(calling, (value) => {
+    if (value) {
+      callingTimeout = setTimeout(() => {
+        if (calling.value) {
+          calling.value = false
+        }
+      }, callingTimeoutMs)
+    }
+    else {
+      stopUserMedia()
+      if (callingTimeout) {
+        clearTimeout(callingTimeout)
+      }
+    }
+  })
 
   onUnmounted(() => end())
 
