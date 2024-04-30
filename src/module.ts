@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addImportsDir } from '@nuxt/kit'
+import { defineNuxtModule, addPlugin, createResolver, addImportsDir, extendViteConfig } from '@nuxt/kit'
 import { defu } from 'defu'
 import type { PublicConfig } from './runtime/types'
 
@@ -33,5 +33,11 @@ export default defineNuxtModule<ModuleOptions>({
     addPlugin(resolve('./runtime/plugins/init.client'))
     addImportsDir(resolve('./runtime/utils'))
     addImportsDir(resolve('./runtime/composables'))
+
+    extendViteConfig((config) => {
+      config.optimizeDeps ||= {}
+      config.optimizeDeps.include ||= []
+      config.optimizeDeps.include.push('sdp')
+    })
   },
 })
