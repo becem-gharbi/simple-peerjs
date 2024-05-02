@@ -19,6 +19,8 @@ export class NPeer {
   static #rmMediaConnection: MediaConnection | null
   static #lcMediaConnection: MediaConnection | null
   static #lcMediaStream: MediaStream | null
+  static #callingTimeout: NodeJS.Timeout | null
+  static #callingTimeoutMs: number
 
   constructor(peer: Peer, id: string) {
     this.id = id
@@ -40,6 +42,8 @@ export class NPeer {
     NPeer.#rmMediaConnection = null
     NPeer.#lcMediaConnection = null
     NPeer.#lcMediaStream = null
+    NPeer.#callingTimeout = null
+    NPeer.#callingTimeoutMs = 10000
   }
 
   connect(opts?: PeerConnectOption) {
@@ -73,9 +77,101 @@ export class NPeer {
     await this.#lcDataConnection?.send(data, chunked)
   }
 
-  startCall(rmVideoEl: HTMLVideoElement, opts?: CallOption) { }
-  static onCall(rmVideoEl: HTMLVideoElement, cb: () => void) {}
-  static endCall() { }
-  static acceptCall() { }
-  static declineCall() { }
+  async startCall(rmVideoEl: HTMLVideoElement, opts?: CallOption) {
+    NPeer.#lcMediaStream = await NPeer.#getUserMedia()
+
+    NPeer.#lcMediaConnection = NPeer.peer.call(this.id, NPeer.#lcMediaStream, opts)
+
+    NPeer.media.value = 'waiting'
+
+    if (NPeer.#callingTimeout) {
+      clearTimeout(NPeer.#callingTimeout)
+      NPeer.#callingTimeout = null
+    }
+    NPeer.#callingTimeout = setTimeout(() => {
+      NPeer.media.value = 'inactive'
+      NPeer.#clearUserMedia()
+    }, NPeer.#callingTimeoutMs)
+
+    NPeer.#lcMediaConnection.on('stream', (stream) => {
+      NPeer.media.value = 'active'
+      rmVideoEl.srcObject = stream
+    })
+
+    NPeer.#lcMediaConnection.on('close', () => {
+      NPeer.#clearUserMedia()
+      NPeer.media.value = 'inactive'
+      rmVideoEl.srcObject = null
+    })
+  }
+
+  static onCall(rmVideoEl: HTMLVideoElement) {
+    NPeer.peer.on('call', (call) => {
+      NPeer.#rmMediaConnection = call
+
+      NPeer.media.value = 'calling'
+
+      if (NPeer.#callingTimeout) {
+        clearTimeout(NPeer.#callingTimeout)
+        NPeer.#callingTimeout = null
+      }
+      NPeer.#callingTimeout = setTimeout(() => {
+        NPeer.media.value = 'inactive'
+        NPeer.#clearUserMedia()
+      }, NPeer.#callingTimeoutMs)
+
+      NPeer.#rmMediaConnection.on('stream', (stream) => {
+        NPeer.media.value = 'active'
+        rmVideoEl.srcObject = stream
+      })
+
+      NPeer.#rmMediaConnection.on('close', () => {
+        NPeer.#clearUserMedia()
+        NPeer.media.value = 'inactive'
+        rmVideoEl.srcObject = null
+      })
+    })
+  }
+
+  static endCall() {
+    NPeer.#lcMediaConnection?.close()
+    NPeer.#rmMediaConnection?.close()
+    NPeer.#clearUserMedia()
+    //* Maybe set media to inactive
+  }
+
+  static async acceptCall() {
+    NPeer.#lcMediaStream = await NPeer.#getUserMedia()
+    NPeer.#rmMediaConnection?.answer(NPeer.#lcMediaStream)
+    //* Maybe set media to active
+  }
+
+  static declineCall() {
+    NPeer.#lcMediaConnection?.close()
+    NPeer.#rmMediaConnection?.close()
+    NPeer.media.value = 'inactive'
+  }
+
+  static #getUserMedia() {
+    return navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: 'user',
+        width: {
+          ideal: window.innerWidth,
+        },
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
+    })
+  }
+
+  static #clearUserMedia() {
+    this.#lcMediaStream?.getTracks().forEach((track) => {
+      if (track.readyState === 'live') {
+        track.stop()
+      }
+    })
+  }
 }
