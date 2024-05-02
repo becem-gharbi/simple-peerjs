@@ -1,6 +1,7 @@
 import { Peer } from 'peerjs'
 import type { DataConnection } from 'peerjs'
 import type { PublicConfig } from '../types'
+import { NPeer } from '../utils/NPeerjs'
 import { defineNuxtPlugin } from '#app'
 import { useState } from '#imports'
 
@@ -9,17 +10,10 @@ export default defineNuxtPlugin({
 
   setup(nuxtApp) {
     const config = nuxtApp.$config.public.peerjs as PublicConfig
-
-    /**
-     * Connected to Peer server
-     */
-    const connected = useState('peerjs-connected', () => false)
-
-    /**
-     * Local Peer instance
-     */
     let peer: null | Peer = null
-    const connections = new Map<string, DataConnection>()
+    const nPeers = new Map<string, NPeer>()
+    const connected = useState('peerjs-server-connected', () => false)
+    const lcDataConnections = new Map<string, DataConnection>()
 
     /**
      * Initiate the connection to the server.
@@ -38,8 +32,17 @@ export default defineNuxtPlugin({
       peer.on('disconnected', () => {
         connected.value = false
       })
-      peer.on('connection', (conn) => {
-        connections.set(conn.label, conn)
+      peer.on('connection', (connection) => {
+        const nPeer = nPeers.get(connection.peer)
+        if (nPeer) {
+          nPeer.lcDataConnection = connection
+          nPeer.lcDataConnection.on('close', () => {
+            nPeer.rmDataConnection?.emit('close')
+          })
+        }
+        else {
+          lcDataConnections.set(connection.peer, connection)
+        }
       })
     }
 
@@ -49,18 +52,45 @@ export default defineNuxtPlugin({
     function end() {
       if (peer?.destroyed === false) {
         peer.destroy()
-        connections.clear()
+        nPeers.forEach(nPeer => nPeer.disconnect())
+        nPeers.clear()
+        lcDataConnections.clear()
       }
+    }
+
+    function addNPeer(id: string) {
+      if (!peer) {
+        throw new Error('make sure to initialize local Peer')
+      }
+
+      if (!nPeers.has(id)) {
+        const nPeer = new NPeer(peer, id)
+        nPeer.lcDataConnection = lcDataConnections.get(id) ?? null
+        nPeer.lcDataConnection?.on('close', () => {
+          nPeer.rmDataConnection?.emit('close')
+        })
+        nPeers.set(id, nPeer)
+      }
+
+      return nPeers.get(id)
+    }
+
+    function removeNPeer(id: string) {
+      nPeers.get(id)?.disconnect()
+      nPeers.delete(id)
+      lcDataConnections.delete(id)
     }
 
     return {
       provide: {
         peerjs: {
+          get peer() { return peer },
+          get nPeers() { return nPeers },
+          connected,
           init,
           end,
-          connected,
-          connections,
-          get peer() { return peer },
+          addNPeer,
+          removeNPeer,
         },
       },
     }

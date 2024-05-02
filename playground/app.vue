@@ -8,21 +8,21 @@
     <hr>
 
     <input v-model="rmPeerId">
-    <button @click="connect(rmPeerId)">
+    <button @click="add(rmPeerId)">
       Connect
     </button>
-    <h4>Connected to remote Peer: {{ rmPeerConnected }} </h4>
+    <h4>Connected to remote Peer: {{ connection }} </h4>
     <input v-model="message">
-    <button @click="send(message)">
+    <button @click="nPeer?.sendData(message)">
       Send
     </button>
-    <button @click="endConnection()">
+    <button @click="nPeer?.disconnect()">
       End
     </button>
-    <h4>Data received: {{ dataReceived }}</h4>
+    <h4>Data received: {{ nPeer?.dataReceived }}</h4>
     <hr>
 
-    <h4>Streaming: {{ streaming }}</h4>
+    <!-- <h4>Streaming: {{ streaming }}</h4>
     <h4>Calling: {{ calling }}</h4>
     <input v-model="rmPeerId">
     <button @click="call(rmPeerId)">
@@ -38,16 +38,23 @@
     <video
       id="stream"
       autoplay
-    />
+    /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { useNuxtApp, ref, usePeerjsData, usePeerjsMedia } from '#imports'
+import type { NPeer } from '../src/runtime/utils/NPeerjs'
+import { useNuxtApp, ref, computed } from '#imports'
 
 const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
-const { connect, rmPeerConnected, dataReceived, send, end: endConnection } = usePeerjsData('connection 1')
 const message = ref()
-const { call, answer, end, streaming, calling } = usePeerjsMedia('stream')
+
+const nPeer = ref<NPeer>()
+const connection = computed(() => nPeer.value?.connection)
+
+function add(id: string) {
+  nPeer.value = $peerjs.addNPeer(id)
+  nPeer.value?.connect()
+}
 </script>
