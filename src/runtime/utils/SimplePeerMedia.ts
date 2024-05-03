@@ -88,12 +88,12 @@ export class SimplePeerMedia {
     this.#lcMediaConnection?.close()
     this.#rmMediaConnection?.close()
     this.#changeStatus('inactive')
+    this.#clearUserMedia()
   }
 
   async acceptCall() {
     this.#lcMediaStream = await this.#getUserMedia()
     this.#rmMediaConnection?.answer(this.#lcMediaStream)
-    //* Maybe set media to active
   }
 
   #changeStatus(status: MediaStatus) {
@@ -133,8 +133,6 @@ export class SimplePeerMedia {
   #setCallingTimeout() {
     this.#clearCallingTimeout()
     this.#callingTimeout = setTimeout(() => {
-      console.log('********* Calling timeout *********')
-
       this.status = 'inactive'
       this.#options.onStatusChange('inactive')
       this.#clearUserMedia()
