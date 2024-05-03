@@ -7,9 +7,9 @@ import { SimplePeerData } from './SimplePeerData'
 import type { SimplePeerDataOptions } from './SimplePeerData'
 
 export interface SimplePeerOptions extends Partial<PeerOptions> {
-  callingTimeoutMs: number
-  connectIntervalMs: number
   rmVideoElId: string
+  callingTimeoutMs?: number
+  connectIntervalMs?: number
   lcVideoElId?: string
 }
 
@@ -19,6 +19,9 @@ interface Hooks {
   'data:connection': (rmPeerId: Peer['id'], metadata?: unknown) => Promise<void> | void
   'data:received': (rmPeerId: Peer['id'], data: unknown) => Promise<void> | void
 }
+
+const CONNECT_INTERVAL_MS = 5000
+const CALLING_INTERVAL_MS = 15000
 
 export class SimplePeer {
   lcPeerId: Peer['id'] | null
@@ -46,7 +49,7 @@ export class SimplePeer {
     this.lcPeerId = lcPeerId
 
     this.peerMedia = new SimplePeerMedia(this.#peer, {
-      callingTimeoutMs: this.#options.callingTimeoutMs,
+      callingTimeoutMs: this.#options.callingTimeoutMs ?? CALLING_INTERVAL_MS,
       rmVideoElId: this.#options.rmVideoElId,
       lcVideoElId: this.#options.lcVideoElId,
       onStatusChange: status => this.hooks.callHook('media:status', status),
@@ -106,7 +109,7 @@ export class SimplePeer {
 
     if (!this.peerDataMap.has(rmPeerId)) {
       const peerData = new SimplePeerData(this.#peer, rmPeerId, {
-        connectIntervalMs: this.#options.connectIntervalMs,
+        connectIntervalMs: this.#options.connectIntervalMs ?? CONNECT_INTERVAL_MS,
         ...opts,
       })
 

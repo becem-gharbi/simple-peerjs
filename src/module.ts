@@ -14,8 +14,6 @@ export default defineNuxtModule<ModuleOptions>({
     host: '0.peerjs.com',
     path: '/',
     port: 443,
-    callingTimeoutMs: 10000,
-    connectIntervalMs: 5000,
     rmVideoElId: 'peerjs-rm-video',
     lcVideoElId: 'peerjs-lc-video',
   },

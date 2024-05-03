@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h3> Connected to server: {{ !$peerjs.connected }}</h3>
     <h4>Local Peer ID: {{ $peerjs.lcPeerId }}</h4>
     <button @click="$peerjs.end()">
       End
