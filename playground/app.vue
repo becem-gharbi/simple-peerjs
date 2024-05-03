@@ -54,11 +54,13 @@ const rmPeerConnected = ref(false)
 let nPeer: SimplePeerData | null = null
 
 function add(id: string) {
-  nPeer = $peerjs.addPeerData(id)
-  nPeer.connect({ metadata: { from: id } })
-  nPeer.rmDataConnection?.on('data', (data) => {
+  nPeer = $peerjs.addPeerData(id, { metadata: { from: id } })
+
+  $peerjs.hooks.hook('data:received', (id, data) => {
+    console.log('data:received', { id, data })
     reception.value = data
   })
+
   nPeer.rmDataConnection?.on('open', () => {
     rmPeerConnected.value = true
   })

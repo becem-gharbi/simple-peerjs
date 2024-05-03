@@ -12,6 +12,7 @@ interface Options {
 interface Hooks {
   'media:call': (metadata: object) => Promise<void> | void
   'data:connection': (metadata: object) => Promise<void> | void
+  'data:received': (rmPeerId: Peer['id'], data: unknown) => Promise<void> | void
 }
 
 export class SimplePeer {
@@ -31,7 +32,6 @@ export class SimplePeer {
     this.peerMedia = null
     this.#options = opts
     this.hooks = createHooks()
-    this.hooks.hook('data:connection', () => {})
   }
 
   init(lcPeerId: Peer['id']) {
@@ -75,16 +75,26 @@ export class SimplePeer {
   end() {
     if (this.peer && this.peer.destroyed === false) {
       this.peer.destroy()
-      this.peerDataMap.forEach(conn => conn.disconnect())
+      this.peerDataMap.forEach(conn => conn.end())
       this.peerDataMap.clear()
       this.#lcDataConnectionMap.clear()
     }
   }
 
-  addPeerData(rmPeerId: Peer['id']) {
-    if (this.peer && !this.peerDataMap.has(rmPeerId)) {
-      const peerData = new SimplePeerData(this.peer, rmPeerId)
+  addPeerData(rmPeerId: Peer['id'], opts?: SimplePeerData['options']) {
+    if (!this.peer) {
+      throw new Error('Please make sure to initialize local Peer')
+    }
+
+    if (!this.peerDataMap.has(rmPeerId)) {
+      const peerData = new SimplePeerData(this.peer, rmPeerId, opts)
+
+      peerData.rmDataConnection?.on('data', (data) => {
+        this.hooks.callHook('data:received', rmPeerId, data)
+      })
+
       peerData.lcDataConnection = this.#lcDataConnectionMap.get(rmPeerId) ?? null
+
       peerData.lcDataConnection?.on('close', () => {
         peerData.rmDataConnection?.emit('close')
       })
@@ -95,7 +105,7 @@ export class SimplePeer {
   }
 
   removePeerData(rmPeerId: Peer['id']) {
-    this.peerDataMap.get(rmPeerId)?.disconnect()
+    this.peerDataMap.get(rmPeerId)?.end()
     this.peerDataMap.delete(rmPeerId)
     this.#lcDataConnectionMap.delete(rmPeerId)
   }

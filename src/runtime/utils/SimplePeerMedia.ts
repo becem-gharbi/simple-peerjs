@@ -16,7 +16,7 @@ export class SimplePeerMedia {
   #lcMediaStream: MediaStream | null
   #callingTimeout: NodeJS.Timeout | null
   #callingTimeoutMs: number
-  #options: Options
+  options: Options
 
   constructor(peer: Peer, opts?: Options) {
     this.#peer = peer
@@ -27,7 +27,7 @@ export class SimplePeerMedia {
     this.#callingTimeout = null
     this.#callingTimeoutMs = 10000
 
-    this.#options = defu(opts, {
+    this.options = defu(opts, {
       lcVideoElId: 'peerjs-lc-video',
       rmVideoElId: 'peerjs-rm-video',
     })
@@ -54,7 +54,7 @@ export class SimplePeerMedia {
       if (this.#callingTimeout) {
         clearTimeout(this.#callingTimeout)
       }
-      this.#renderVideo(this.#options.rmVideoElId, stream)
+      this.#renderVideo(this.options.rmVideoElId, stream)
     })
 
     this.#lcMediaConnection.on('close', () => {
@@ -63,7 +63,7 @@ export class SimplePeerMedia {
         clearTimeout(this.#callingTimeout)
       }
       this.#clearUserMedia()
-      this.#renderVideo(this.#options.rmVideoElId, null)
+      this.#renderVideo(this.options.rmVideoElId, null)
     })
   }
 
@@ -86,7 +86,7 @@ export class SimplePeerMedia {
       if (this.#callingTimeout) {
         clearTimeout(this.#callingTimeout)
       }
-      this.#renderVideo(this.#options.rmVideoElId, stream)
+      this.#renderVideo(this.options.rmVideoElId, stream)
     })
 
     this.#rmMediaConnection.on('close', () => {
@@ -95,7 +95,7 @@ export class SimplePeerMedia {
         clearTimeout(this.#callingTimeout)
       }
       this.#clearUserMedia()
-      this.#renderVideo(this.#options.rmVideoElId, null)
+      this.#renderVideo(this.options.rmVideoElId, null)
     })
   }
 

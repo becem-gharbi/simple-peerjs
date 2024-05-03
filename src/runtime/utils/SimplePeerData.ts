@@ -1,4 +1,9 @@
 import type { PeerConnectOption, DataConnection, Peer } from 'peerjs'
+import { defu } from 'defu'
+
+interface Options extends PeerConnectOption {
+  connectIntervalMs?: number
+}
 
 export class SimplePeerData {
   rmPeerId: Peer['id']
@@ -7,21 +12,26 @@ export class SimplePeerData {
   rmDataConnection: DataConnection | null
   lcDataConnection: DataConnection | null
   #connectInterval: NodeJS.Timeout | null
-  #connectIntervalMs: number
+  options: Options
 
-  constructor(peer: Peer, rmPeerId: Peer['id']) {
+  constructor(peer: Peer, rmPeerId: Peer['id'], opts?: Options) {
     this.rmPeerId = rmPeerId
     this.#peer = peer
     this.connected = false
     this.rmDataConnection = null
     this.lcDataConnection = null
     this.#connectInterval = null
-    this.#connectIntervalMs = 5000
+
+    this.options = defu(opts, {
+      connectIntervalMs: 5000,
+    })
+
+    this.#init()
   }
 
-  connect(opts?: PeerConnectOption) {
-    const _connect = () => {
-      this.rmDataConnection = this.#peer.connect(this.rmPeerId, opts)
+  #init() {
+    const connect = () => {
+      this.rmDataConnection = this.#peer.connect(this.rmPeerId, this.options)
 
       this.rmDataConnection?.on('open', () => {
         this.connected = true
@@ -34,17 +44,17 @@ export class SimplePeerData {
       })
     }
 
-    _connect()
+    connect()
 
     this.#connectInterval = setInterval(() => {
       if (!this.#peer.disconnected && this.connected === false) {
-        _connect()
+        connect()
       }
     }
-    , this.#connectIntervalMs)
+    , this.options.connectIntervalMs)
   }
 
-  disconnect() {
+  end() {
     if (this.#connectInterval) {
       clearInterval(this.#connectInterval)
       this.#connectInterval = null
