@@ -109,12 +109,14 @@ export class SimplePeer {
 
     if (!this.peerDataMap.has(rmPeerId)) {
       const peerData = new SimplePeerData(this.#peer, rmPeerId, {
-        connectIntervalMs: this.#options.connectIntervalMs ?? CONNECT_INTERVAL_MS,
         ...opts,
+        connectIntervalMs: this.#options.connectIntervalMs ?? CONNECT_INTERVAL_MS,
       })
 
-      peerData.rmDataConnection?.on('data', (data) => {
-        this.hooks.callHook('data:received', rmPeerId, data)
+      peerData.connect((rmDataConnection) => {
+        rmDataConnection?.on('data', (data) => {
+          this.hooks.callHook('data:received', rmPeerId, data)
+        })
       })
 
       peerData.lcDataConnection = this.#lcDataConnectionMap.get(rmPeerId) ?? null
@@ -126,7 +128,7 @@ export class SimplePeer {
       this.peerDataMap.set(rmPeerId, peerData)
     }
 
-    return this.peerDataMap.get(rmPeerId) as SimplePeerData
+    return this.peerDataMap.get(rmPeerId)!
   }
 
   removePeerData(rmPeerId: Peer['id']) {

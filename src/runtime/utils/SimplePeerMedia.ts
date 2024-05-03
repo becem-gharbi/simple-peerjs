@@ -48,7 +48,6 @@ export class SimplePeerMedia {
     this.#lcMediaConnection = this.#peer.call(rmPeerId, this.#lcMediaStream, opts)
 
     this.#changeStatus('waiting')
-    this.#clearCallingTimeout()
     this.#setCallingTimeout()
 
     this.#lcMediaConnection.on('stream', (stream) => {
@@ -69,7 +68,6 @@ export class SimplePeerMedia {
     this.#rmMediaConnection = mediaConnection
 
     this.#changeStatus('calling')
-    this.#clearCallingTimeout()
     this.#setCallingTimeout()
 
     this.#rmMediaConnection.on('stream', (stream) => {
@@ -133,7 +131,10 @@ export class SimplePeerMedia {
   }
 
   #setCallingTimeout() {
+    this.#clearCallingTimeout()
     this.#callingTimeout = setTimeout(() => {
+      console.log('********* Calling timeout *********')
+
       this.status = 'inactive'
       this.#options.onStatusChange('inactive')
       this.#clearUserMedia()

@@ -15,7 +15,7 @@
     <button @click="nPeer?.sendData(message)">
       Send
     </button>
-    <button @click="nPeer?.end()">
+    <button @click="$peerjs.removePeerData(rmPeerId)">
       End
     </button>
     <h4>Data received: {{ reception }}</h4>
@@ -70,12 +70,6 @@ $peerjs.hooks.hook('media:status', (s) => {
 function add(id: string) {
   nPeer = $peerjs.addPeerData(id, { metadata: { from: id } })
 
-  nPeer.rmDataConnection?.on('open', () => {
-    rmPeerConnected.value = true
-  })
-
-  nPeer.rmDataConnection?.on('close', () => {
-    rmPeerConnected.value = false
-  })
+  setInterval(() => rmPeerConnected.value = nPeer!.connected, 1000)
 }
 </script>

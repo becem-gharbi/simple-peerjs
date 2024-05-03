@@ -21,13 +21,12 @@ export class SimplePeerData {
     this.#peer = peer
     this.#connectInterval = null
     this.#options = opts
-
-    this.#connect()
-    this.#setConnectInterval()
   }
 
-  #connect() {
+  connect(cb: (rmDataConnection: DataConnection) => void) {
     this.rmDataConnection = this.#peer.connect(this.rmPeerId, this.#options)
+
+    cb(this.rmDataConnection)
 
     this.rmDataConnection?.on('open', () => {
       this.connected = true
@@ -35,8 +34,15 @@ export class SimplePeerData {
 
     this.rmDataConnection?.on('close', () => {
       this.connected = false
-      this.#clearConnectInterval()
     })
+
+    this.#clearConnectInterval()
+
+    this.#connectInterval = setInterval(() => {
+      if (!this.#peer.disconnected && this.connected === false) {
+        this.connect(cb)
+      }
+    }, this.#options.connectIntervalMs)
   }
 
   end() {
@@ -46,15 +52,9 @@ export class SimplePeerData {
   }
 
   async sendData(data: unknown, chunked?: boolean) {
-    return this.lcDataConnection?.send(data, chunked)
-  }
-
-  #setConnectInterval() {
-    this.#connectInterval = setInterval(() => {
-      if (!this.#peer.disconnected && this.connected === false) {
-        this.#connect()
-      }
-    }, this.#options.connectIntervalMs)
+    if (this.connected) {
+      return this.lcDataConnection?.send(data, chunked)
+    }
   }
 
   #clearConnectInterval() {
