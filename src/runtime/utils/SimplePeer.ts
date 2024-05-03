@@ -59,7 +59,7 @@ export class SimplePeer {
       const rmPeerId = mediaConnection.peer
       this.hooks.callHook('media:call', rmPeerId, mediaConnection.metadata)
         .then(() => {
-          this.peerMedia?.onCall(mediaConnection)
+          this.peerMedia?._onCall(mediaConnection)
         })
         .catch(() => {})
     })
@@ -79,9 +79,9 @@ export class SimplePeer {
         .then(() => {
           const peerData = this.peerDataMap.get(rmPeerId)
           if (peerData) {
-            peerData.lcDataConnection = lcDataConnection
-            peerData.lcDataConnection.on('close', () => {
-              peerData.rmDataConnection?.emit('close')
+            peerData._lcDataConnection = lcDataConnection
+            peerData._lcDataConnection.on('close', () => {
+              peerData._rmDataConnection?.emit('close')
             })
           }
           else {
@@ -95,7 +95,7 @@ export class SimplePeer {
   end() {
     if (this.#peer && this.#peer.destroyed === false) {
       this.#peer.destroy()
-      this.peerDataMap.forEach(peerData => peerData.end())
+      this.peerDataMap.forEach(peerData => peerData._end())
       this.peerDataMap.clear()
       this.#lcDataConnectionMap.clear()
       this.hooks.removeAllHooks()
@@ -113,16 +113,16 @@ export class SimplePeer {
         connectIntervalMs: this.#options.connectIntervalMs ?? CONNECT_INTERVAL_MS,
       })
 
-      peerData.connect((rmDataConnection) => {
+      peerData._connect((rmDataConnection) => {
         rmDataConnection?.on('data', (data) => {
           this.hooks.callHook('data:received', rmPeerId, data)
         })
       })
 
-      peerData.lcDataConnection = this.#lcDataConnectionMap.get(rmPeerId) ?? null
+      peerData._lcDataConnection = this.#lcDataConnectionMap.get(rmPeerId) ?? null
 
-      peerData.lcDataConnection?.on('close', () => {
-        peerData.rmDataConnection?.emit('close')
+      peerData._lcDataConnection?.on('close', () => {
+        peerData._rmDataConnection?.emit('close')
       })
 
       this.peerDataMap.set(rmPeerId, peerData)
@@ -132,7 +132,7 @@ export class SimplePeer {
   }
 
   removePeerData(rmPeerId: Peer['id']) {
-    this.peerDataMap.get(rmPeerId)?.end()
+    this.peerDataMap.get(rmPeerId)?._end()
     this.peerDataMap.delete(rmPeerId)
     this.#lcDataConnectionMap.delete(rmPeerId)
   }

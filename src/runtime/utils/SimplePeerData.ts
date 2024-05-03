@@ -7,8 +7,8 @@ export interface SimplePeerDataOptions extends Partial<PeerConnectOption> {
 export class SimplePeerData {
   rmPeerId: Peer['id']
   connected: boolean
-  rmDataConnection: DataConnection | null
-  lcDataConnection: DataConnection | null
+  _rmDataConnection: DataConnection | null
+  _lcDataConnection: DataConnection | null
   #peer: Peer
   #connectInterval: NodeJS.Timeout | null
   #options: SimplePeerDataOptions
@@ -16,23 +16,23 @@ export class SimplePeerData {
   constructor(peer: Peer, rmPeerId: Peer['id'], opts: SimplePeerDataOptions) {
     this.rmPeerId = rmPeerId
     this.connected = false
-    this.rmDataConnection = null
-    this.lcDataConnection = null
+    this._rmDataConnection = null
+    this._lcDataConnection = null
     this.#peer = peer
     this.#connectInterval = null
     this.#options = opts
   }
 
-  connect(cb: (rmDataConnection: DataConnection) => void) {
-    this.rmDataConnection = this.#peer.connect(this.rmPeerId, this.#options)
+  _connect(cb: (rmDataConnection: DataConnection) => void) {
+    this._rmDataConnection = this.#peer.connect(this.rmPeerId, this.#options)
 
-    cb(this.rmDataConnection)
+    cb(this._rmDataConnection)
 
-    this.rmDataConnection?.on('open', () => {
+    this._rmDataConnection?.on('open', () => {
       this.connected = true
     })
 
-    this.rmDataConnection?.on('close', () => {
+    this._rmDataConnection?.on('close', () => {
       this.connected = false
     })
 
@@ -40,20 +40,20 @@ export class SimplePeerData {
 
     this.#connectInterval = setInterval(() => {
       if (!this.#peer.disconnected && this.connected === false) {
-        this.connect(cb)
+        this._connect(cb)
       }
     }, this.#options.connectIntervalMs)
   }
 
-  end() {
+  _end() {
     this.#clearConnectInterval()
-    this.rmDataConnection?.close()
-    this.lcDataConnection?.close()
+    this._rmDataConnection?.close()
+    this._lcDataConnection?.close()
   }
 
   async sendData(data: unknown, chunked?: boolean) {
     if (this.connected) {
-      return this.lcDataConnection?.send(data, chunked)
+      return this._lcDataConnection?.send(data, chunked)
     }
   }
 

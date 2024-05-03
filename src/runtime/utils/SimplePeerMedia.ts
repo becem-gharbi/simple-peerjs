@@ -64,7 +64,7 @@ export class SimplePeerMedia {
     })
   }
 
-  onCall(mediaConnection: MediaConnection) {
+  _onCall(mediaConnection: MediaConnection) {
     this.#rmMediaConnection = mediaConnection
 
     this.#changeStatus('calling')
