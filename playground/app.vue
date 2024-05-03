@@ -19,7 +19,7 @@
     <button @click="nPeer?.disconnect()">
       End
     </button>
-    <h4>Data received: {{ nPeer?.dataReceived }}</h4>
+    <h4>Data received: {{ reception }}</h4>
     <hr>
 
     <!-- <h4>Streaming: {{ streaming }}</h4>
@@ -44,17 +44,24 @@
 
 <script setup lang="ts">
 import type { NPeer } from '../src/runtime/utils/NPeerjs'
-import { useNuxtApp, ref, computed } from '#imports'
+import { useNuxtApp, ref } from '#imports'
 
 const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
 const message = ref()
+const reception = ref()
+const connection = ref('offline')
 
-const nPeer = ref<NPeer>()
-const connection = computed(() => nPeer.value?.connection)
+let nPeer: NPeer | null = null
 
 function add(id: string) {
-  nPeer.value = $peerjs.addNPeer(id)
-  nPeer.value?.connect()
+  nPeer = $peerjs.addNPeer(id)
+  nPeer.connect()
+  nPeer.onDataReceived((data) => {
+    reception.value = data
+  })
+  nPeer.onConnectionChange((conn) => {
+    connection.value = conn
+  })
 }
 </script>

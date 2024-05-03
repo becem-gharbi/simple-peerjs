@@ -9,7 +9,7 @@ declare module '#app' {
       connected: Ref<boolean>
       init: (uid: string) => void
       end: () => void
-      addNPeer: (id: string) => NPeer | undefined
+      addNPeer: (id: string) => NPeer
       removeNPeer: (id: string) => void
     }
   }

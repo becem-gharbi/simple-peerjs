@@ -5,13 +5,14 @@ type Media = 'active' | 'inactive' | 'calling' | 'waiting'
 
 export class NPeer {
   id: string
-  static peer: Peer
+  static #peer: Peer
 
-  connection: Connection
-  dataReceived: unknown
+  #connection: Connection
   rmDataConnection: DataConnection | null
   lcDataConnection: DataConnection | null
-  connectInterval: NodeJS.Timeout | null
+  #connectInterval: NodeJS.Timeout | null
+  onConnectionChange: (cb: (conn: Connection) => void) => void
+  onDataReceived: (cb: (data: unknown) => void) => void
   static #connectIntervalMs: number
 
   static media: Media
@@ -23,13 +24,14 @@ export class NPeer {
 
   constructor(peer: Peer, id: string) {
     this.id = id
-    NPeer.peer = peer
+    NPeer.#peer = peer
 
-    this.connection = 'offline'
-    this.dataReceived = null
+    this.#connection = 'offline'
     this.rmDataConnection = null
     this.lcDataConnection = null
-    this.connectInterval = null
+    this.#connectInterval = null
+    this.onConnectionChange = () => {}
+    this.onDataReceived = () => {}
     NPeer.#connectIntervalMs = 5000
 
     NPeer.media = 'inactive'
@@ -42,26 +44,31 @@ export class NPeer {
 
   connect(opts?: PeerConnectOption) {
     const _connect = () => {
-      this.rmDataConnection = NPeer.peer.connect(this.id, opts)
+      this.rmDataConnection = NPeer.#peer.connect(this.id, opts)
 
-      this.rmDataConnection.on('open', () => {
-        this.connection = 'online'
-      })
-      this.rmDataConnection.on('close', () => {
-        this.connection = 'offline'
-        if (this.connectInterval) {
-          clearInterval(this.connectInterval)
-        }
-      })
-      this.rmDataConnection.on('data', (data) => {
-        this.dataReceived = data
-      })
+      this.onConnectionChange = (cb) => {
+        this.rmDataConnection?.on('open', () => {
+          this.#connection = 'online'
+          cb('online')
+        })
+        this.rmDataConnection?.on('close', () => {
+          this.#connection = 'offline'
+          cb('offline')
+          if (this.#connectInterval) {
+            clearInterval(this.#connectInterval)
+          }
+        })
+      }
+
+      this.onDataReceived = (cb) => {
+        this.rmDataConnection?.on('data', cb)
+      }
     }
 
     _connect()
 
-    this.connectInterval = setInterval(() => {
-      if (!NPeer.peer.disconnected && this.connection === 'offline') {
+    this.#connectInterval = setInterval(() => {
+      if (!NPeer.#peer.disconnected && this.#connection === 'offline') {
         _connect()
       }
     }
@@ -69,9 +76,9 @@ export class NPeer {
   }
 
   disconnect() {
-    if (this.connectInterval) {
-      clearInterval(this.connectInterval)
-      this.connectInterval = null
+    if (this.#connectInterval) {
+      clearInterval(this.#connectInterval)
+      this.#connectInterval = null
     }
     this.rmDataConnection?.close()
     this.lcDataConnection?.close()
@@ -84,7 +91,7 @@ export class NPeer {
   async startCall(rmVideoEl: HTMLVideoElement, opts?: CallOption) {
     NPeer.#lcMediaStream = await NPeer.#getUserMedia()
 
-    NPeer.#lcMediaConnection = NPeer.peer.call(this.id, NPeer.#lcMediaStream, opts)
+    NPeer.#lcMediaConnection = NPeer.#peer.call(this.id, NPeer.#lcMediaStream, opts)
 
     NPeer.media = 'waiting'
 
@@ -110,7 +117,7 @@ export class NPeer {
   }
 
   static onCall(rmVideoEl: HTMLVideoElement) {
-    NPeer.peer.on('call', (call) => {
+    NPeer.#peer.on('call', (call) => {
       NPeer.#rmMediaConnection = call
 
       NPeer.media = 'calling'

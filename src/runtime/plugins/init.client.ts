@@ -60,7 +60,7 @@ export default defineNuxtPlugin({
 
     function addNPeer(id: string) {
       if (!peer) {
-        throw new Error('make sure to initialize local Peer')
+        throw new Error('Please make sure to initialize local Peer')
       }
 
       if (!nPeers.has(id)) {
@@ -72,7 +72,7 @@ export default defineNuxtPlugin({
         nPeers.set(id, nPeer)
       }
 
-      return nPeers.get(id)
+      return nPeers.get(id) as NPeer
     }
 
     function removeNPeer(id: string) {
