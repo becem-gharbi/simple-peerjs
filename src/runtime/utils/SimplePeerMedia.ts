@@ -1,11 +1,11 @@
 import type { CallOption, MediaConnection, Peer } from 'peerjs'
-import { defu } from 'defu'
 
 type MediaStatus = 'active' | 'inactive' | 'calling' | 'waiting'
 
-interface Options {
+export interface SimplePeerMediaOptions {
   rmVideoElId: string
-  callingTimeoutMs?: number
+  callingTimeoutMs: number
+  onStatusChange: (status: MediaStatus) => Promise<void> | void
 }
 
 export class SimplePeerMedia {
@@ -15,20 +15,16 @@ export class SimplePeerMedia {
   #lcMediaConnection: MediaConnection | null
   #lcMediaStream: MediaStream | null
   #callingTimeout: NodeJS.Timeout | null
-  #options: Options
+  #options: SimplePeerMediaOptions
 
-  constructor(peer: Peer, opts?: Options) {
+  constructor(peer: Peer, opts: SimplePeerMediaOptions) {
     this.status = 'inactive'
     this.#peer = peer
     this.#rmMediaConnection = null
     this.#lcMediaConnection = null
     this.#lcMediaStream = null
     this.#callingTimeout = null
-
-    this.#options = defu(opts, {
-      rmVideoElId: 'peerjs-rm-video',
-      callingTimeoutMs: 10000,
-    })
+    this.#options = opts
   }
 
   async startCall(rmPeerId: Peer['id'], opts?: CallOption) {
@@ -36,19 +32,18 @@ export class SimplePeerMedia {
 
     this.#lcMediaConnection = this.#peer.call(rmPeerId, this.#lcMediaStream, opts)
 
-    this.status = 'waiting'
-
+    this.#changeStatus('waiting')
     this.#clearCallingTimeout()
     this.#setCallingTimeout()
 
     this.#lcMediaConnection.on('stream', (stream) => {
-      this.status = 'active'
+      this.#changeStatus('active')
       this.#clearCallingTimeout()
       this.#renderVideo(this.#options.rmVideoElId, stream)
     })
 
     this.#lcMediaConnection.on('close', () => {
-      this.status = 'inactive'
+      this.#changeStatus('inactive')
       this.#clearCallingTimeout()
       this.#clearUserMedia()
       this.#renderVideo(this.#options.rmVideoElId, null)
@@ -58,19 +53,18 @@ export class SimplePeerMedia {
   onCall(mediaConnection: MediaConnection) {
     this.#rmMediaConnection = mediaConnection
 
-    this.status = 'calling'
-
+    this.#changeStatus('calling')
     this.#clearCallingTimeout()
     this.#setCallingTimeout()
 
     this.#rmMediaConnection.on('stream', (stream) => {
-      this.status = 'active'
+      this.#changeStatus('active')
       this.#clearCallingTimeout()
       this.#renderVideo(this.#options.rmVideoElId, stream)
     })
 
     this.#rmMediaConnection.on('close', () => {
-      this.status = 'inactive'
+      this.#changeStatus('inactive')
       this.#clearCallingTimeout()
       this.#clearUserMedia()
       this.#renderVideo(this.#options.rmVideoElId, null)
@@ -80,7 +74,7 @@ export class SimplePeerMedia {
   endCall() {
     this.#lcMediaConnection?.close()
     this.#rmMediaConnection?.close()
-    this.status = 'inactive'
+    this.#changeStatus('inactive')
   }
 
   async acceptCall() {
@@ -104,6 +98,11 @@ export class SimplePeerMedia {
     })
   }
 
+  #changeStatus(status: MediaStatus) {
+    this.status = status
+    this.#options.onStatusChange(status)
+  }
+
   #clearUserMedia() {
     this.#lcMediaStream?.getTracks().forEach((track) => {
       if (track.readyState === 'live') {
@@ -125,6 +124,7 @@ export class SimplePeerMedia {
   #setCallingTimeout() {
     this.#callingTimeout = setTimeout(() => {
       this.status = 'inactive'
+      this.#options.onStatusChange('inactive')
       this.#clearUserMedia()
     }, this.#options.callingTimeoutMs)
   }

@@ -14,6 +14,9 @@ export default defineNuxtModule<ModuleOptions>({
     host: '0.peerjs.com',
     path: '/',
     port: 443,
+    callingTimeoutMs: 10000,
+    connectIntervalMs: 5000,
+    rmVideoElId: 'peerjs-rm-video',
   },
 
   setup(_options, _nuxt) {
@@ -22,11 +25,7 @@ export default defineNuxtModule<ModuleOptions>({
     _nuxt.options.runtimeConfig = defu(_nuxt.options.runtimeConfig, {
       app: {},
       public: {
-        peerjs: {
-          host: _options.host,
-          path: _options.path,
-          port: _options.port,
-        },
+        peerjs: _options,
       },
     })
 

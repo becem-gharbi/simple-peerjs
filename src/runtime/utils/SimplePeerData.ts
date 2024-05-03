@@ -1,8 +1,7 @@
 import type { PeerConnectOption, DataConnection, Peer } from 'peerjs'
-import { defu } from 'defu'
 
-export interface Options extends PeerConnectOption {
-  connectIntervalMs?: number
+export interface SimplePeerDataOptions extends Partial<PeerConnectOption> {
+  connectIntervalMs: number
 }
 
 export class SimplePeerData {
@@ -12,19 +11,16 @@ export class SimplePeerData {
   lcDataConnection: DataConnection | null
   #peer: Peer
   #connectInterval: NodeJS.Timeout | null
-  #options: Options
+  #options: SimplePeerDataOptions
 
-  constructor(peer: Peer, rmPeerId: Peer['id'], opts?: Options) {
+  constructor(peer: Peer, rmPeerId: Peer['id'], opts: SimplePeerDataOptions) {
     this.rmPeerId = rmPeerId
     this.connected = false
     this.rmDataConnection = null
     this.lcDataConnection = null
     this.#peer = peer
     this.#connectInterval = null
-
-    this.#options = defu(opts, {
-      connectIntervalMs: 5000,
-    })
+    this.#options = opts
 
     this.#connect()
     this.#setConnectInterval()

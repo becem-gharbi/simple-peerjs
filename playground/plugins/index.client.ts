@@ -15,5 +15,13 @@ export default defineNuxtPlugin({
     nuxtApp.$peerjs.hooks.hook('media:call', (rmPeerId, metadata) => {
       console.log('media:call', rmPeerId, metadata)
     })
+
+    nuxtApp.$peerjs.hooks.hook('media:status', (status) => {
+      console.log('media:status', status)
+    })
+
+    nuxtApp.$peerjs.hooks.hook('data:received', (data) => {
+      console.log('data:received', data)
+    })
   },
 })

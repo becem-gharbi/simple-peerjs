@@ -1,4 +1,4 @@
-import type { SimplePeer } from '../utils'
+import type { SimplePeer, SimplePeerOptions } from '../utils'
 
 declare module '#app' {
   interface NuxtApp {
@@ -6,8 +6,4 @@ declare module '#app' {
   }
 }
 
-export interface PublicConfig {
-  host: string
-  path: string
-  port: number
-}
+export interface PublicConfig extends SimplePeerOptions {}

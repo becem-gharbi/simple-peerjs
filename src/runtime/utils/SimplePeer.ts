@@ -4,14 +4,18 @@ import type { DataConnection, PeerOptions } from 'peerjs'
 import type { Hookable } from 'hookable'
 import { SimplePeerMedia } from './SimplePeerMedia'
 import { SimplePeerData } from './SimplePeerData'
-import type { Options as SimplePeerDataOptions } from './SimplePeerData'
+import type { SimplePeerDataOptions } from './SimplePeerData'
 
-interface Options extends PeerOptions {
+export interface SimplePeerOptions extends Partial<PeerOptions> {
+  callingTimeoutMs: number
+  connectIntervalMs: number
+  rmVideoElId: string
 }
 
 interface Hooks {
-  'media:call': (rmPeerId: Peer['id'], metadata?: object) => Promise<void> | void
-  'data:connection': (rmPeerId: Peer['id'], metadata?: object) => Promise<void> | void
+  'media:call': (rmPeerId: Peer['id'], metadata?: unknown) => Promise<void> | void
+  'media:status': (status: SimplePeerMedia['status']) => Promise<void> | void
+  'data:connection': (rmPeerId: Peer['id'], metadata?: unknown) => Promise<void> | void
   'data:received': (rmPeerId: Peer['id'], data: unknown) => Promise<void> | void
 }
 
@@ -23,9 +27,9 @@ export class SimplePeer {
   hooks: Hookable<Hooks>
   #peer: Peer | null
   #lcDataConnectionMap: Map<Peer['id'], DataConnection>
-  #options: Options | undefined
+  #options: SimplePeerOptions
 
-  constructor(opts?: Options) {
+  constructor(opts: SimplePeerOptions) {
     this.lcPeerId = null
     this.connected = false
     this.peerMedia = null
@@ -40,7 +44,11 @@ export class SimplePeer {
     this.#peer = new Peer(lcPeerId, this.#options)
     this.lcPeerId = lcPeerId
 
-    this.peerMedia = new SimplePeerMedia(this.#peer)
+    this.peerMedia = new SimplePeerMedia(this.#peer, {
+      callingTimeoutMs: this.#options.callingTimeoutMs,
+      rmVideoElId: this.#options.rmVideoElId,
+      onStatusChange: status => this.hooks.callHook('media:status', status),
+    })
 
     this.#peer.on('call', (mediaConnection) => {
       const rmPeerId = mediaConnection.peer
@@ -89,13 +97,16 @@ export class SimplePeer {
     }
   }
 
-  addPeerData(rmPeerId: Peer['id'], opts?: SimplePeerDataOptions) {
+  addPeerData(rmPeerId: Peer['id'], opts?: Partial<SimplePeerDataOptions>) {
     if (!this.#peer) {
       throw new Error('Please make sure to initialize local Peer')
     }
 
     if (!this.peerDataMap.has(rmPeerId)) {
-      const peerData = new SimplePeerData(this.#peer, rmPeerId, opts)
+      const peerData = new SimplePeerData(this.#peer, rmPeerId, {
+        connectIntervalMs: this.#options.connectIntervalMs,
+        ...opts,
+      })
 
       peerData.rmDataConnection?.on('data', (data) => {
         this.hooks.callHook('data:received', rmPeerId, data)

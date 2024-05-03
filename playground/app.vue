@@ -22,7 +22,7 @@
     <h4>Data received: {{ reception }}</h4>
     <hr>
 
-    <h4>Status: {{ $peerjs.peerMedia?.status }}</h4>
+    <h4>Status: {{ status }}</h4>
     <input v-model="rmPeerId">
     <button @click="$peerjs.peerMedia?.startCall(rmPeerId, { metadata: { from: rmPeerId } })">
       Call
@@ -50,6 +50,7 @@ const rmPeerId = ref()
 const message = ref()
 const reception = ref()
 const rmPeerConnected = ref(false)
+const status = ref()
 
 let nPeer: SimplePeerData | null = null
 
@@ -57,13 +58,13 @@ function add(id: string) {
   nPeer = $peerjs.addPeerData(id, { metadata: { from: id } })
 
   $peerjs.hooks.hook('data:received', (id, data) => {
-    console.log('data:received', { id, data })
     reception.value = data
   })
 
   nPeer.rmDataConnection?.on('open', () => {
     rmPeerConnected.value = true
   })
+
   nPeer.rmDataConnection?.on('close', () => {
     rmPeerConnected.value = false
   })
