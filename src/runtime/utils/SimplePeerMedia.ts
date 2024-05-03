@@ -31,8 +31,6 @@ export class SimplePeerMedia {
       lcVideoElId: 'peerjs-lc-video',
       rmVideoElId: 'peerjs-rm-video',
     })
-
-    this.#listenForCall()
   }
 
   async startCall(rmPeerId: Peer['id'], opts?: CallOption) {
@@ -69,37 +67,35 @@ export class SimplePeerMedia {
     })
   }
 
-  #listenForCall() {
-    this.#peer.on('call', (call) => {
-      this.#rmMediaConnection = call
+  onCall(call: MediaConnection) {
+    this.#rmMediaConnection = call
 
-      this.status = 'calling'
+    this.status = 'calling'
 
+    if (this.#callingTimeout) {
+      clearTimeout(this.#callingTimeout)
+      this.#callingTimeout = null
+    }
+    this.#callingTimeout = setTimeout(() => {
+      this.status = 'inactive'
+      this.#clearUserMedia()
+    }, this.#callingTimeoutMs)
+
+    this.#rmMediaConnection.on('stream', (stream) => {
+      this.status = 'active'
       if (this.#callingTimeout) {
         clearTimeout(this.#callingTimeout)
-        this.#callingTimeout = null
       }
-      this.#callingTimeout = setTimeout(() => {
-        this.status = 'inactive'
-        this.#clearUserMedia()
-      }, this.#callingTimeoutMs)
+      this.#renderVideo(this.#options.rmVideoElId, stream)
+    })
 
-      this.#rmMediaConnection.on('stream', (stream) => {
-        this.status = 'active'
-        if (this.#callingTimeout) {
-          clearTimeout(this.#callingTimeout)
-        }
-        this.#renderVideo(this.#options.rmVideoElId, stream)
-      })
-
-      this.#rmMediaConnection.on('close', () => {
-        this.status = 'inactive'
-        if (this.#callingTimeout) {
-          clearTimeout(this.#callingTimeout)
-        }
-        this.#clearUserMedia()
-        this.#renderVideo(this.#options.rmVideoElId, null)
-      })
+    this.#rmMediaConnection.on('close', () => {
+      this.status = 'inactive'
+      if (this.#callingTimeout) {
+        clearTimeout(this.#callingTimeout)
+      }
+      this.#clearUserMedia()
+      this.#renderVideo(this.#options.rmVideoElId, null)
     })
   }
 

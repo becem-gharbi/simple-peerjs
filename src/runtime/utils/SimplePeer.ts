@@ -1,10 +1,17 @@
 import { Peer } from 'peerjs'
 import type { DataConnection, PeerOptions } from 'peerjs'
+import { createHooks } from 'hookable'
+import type { Hookable } from 'hookable'
 import { SimplePeerMedia } from './SimplePeerMedia'
 import { SimplePeerData } from './SimplePeerData'
 
 interface Options {
   peer: PeerOptions
+}
+
+interface Hooks {
+  'media:call': (metadata: object) => Promise<void> | void
+  'data:connection': (metadata: object) => Promise<void> | void
 }
 
 export class SimplePeer {
@@ -14,6 +21,7 @@ export class SimplePeer {
   peerDataMap: Map<Peer['id'], SimplePeerData>
   #options: Options | undefined
   #lcDataConnectionMap: Map<Peer['id'], DataConnection>
+  hooks: Hookable<Hooks>
 
   constructor(opts?: Options) {
     this.connected = false
@@ -22,11 +30,21 @@ export class SimplePeer {
     this.peer = null
     this.peerMedia = null
     this.#options = opts
+    this.hooks = createHooks()
+    this.hooks.hook('data:connection', () => {})
   }
 
   init(lcPeerId: Peer['id']) {
     this.peer = new Peer(lcPeerId, this.#options?.peer)
     this.peerMedia = new SimplePeerMedia(this.peer)
+
+    this.peer.on('call', async (call) => {
+      await this.hooks.callHook('media:call', call.metadata)
+        .then(() => {
+          this.peerMedia?.onCall(call)
+        })
+        .catch(() => {})
+    })
 
     this.peer.on('open', () => {
       this.connected = true
@@ -35,23 +53,27 @@ export class SimplePeer {
       this.connected = false
     })
 
-    this.peer.on('connection', (lcDataConnection) => {
+    this.peer.on('connection', async (lcDataConnection) => {
       const rmPeerId = lcDataConnection.peer
-      const peerData = this.peerDataMap.get(rmPeerId)
-      if (peerData) {
-        peerData.lcDataConnection = lcDataConnection
-        peerData.lcDataConnection.on('close', () => {
-          peerData.rmDataConnection?.emit('close')
+      await this.hooks.callHook('data:connection', lcDataConnection.metadata)
+        .then(() => {
+          const peerData = this.peerDataMap.get(rmPeerId)
+          if (peerData) {
+            peerData.lcDataConnection = lcDataConnection
+            peerData.lcDataConnection.on('close', () => {
+              peerData.rmDataConnection?.emit('close')
+            })
+          }
+          else {
+            this.#lcDataConnectionMap.set(rmPeerId, lcDataConnection)
+          }
         })
-      }
-      else {
-        this.#lcDataConnectionMap.set(rmPeerId, lcDataConnection)
-      }
+        .catch(() => { })
     })
   }
 
   end() {
-    if (this.peer?.destroyed === false) {
+    if (this.peer && this.peer.destroyed === false) {
       this.peer.destroy()
       this.peerDataMap.forEach(conn => conn.disconnect())
       this.peerDataMap.clear()
