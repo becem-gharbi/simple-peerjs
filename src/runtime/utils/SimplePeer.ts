@@ -10,7 +10,7 @@ export interface SimplePeerOptions extends Partial<PeerOptions> {
   callingTimeoutMs: number
   connectIntervalMs: number
   rmVideoElId: string
-  lcVideoElId: string
+  lcVideoElId?: string
 }
 
 interface Hooks {
