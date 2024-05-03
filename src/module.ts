@@ -30,7 +30,7 @@ export default defineNuxtModule<ModuleOptions>({
       },
     })
 
-    addPlugin(resolve('./runtime/plugins/init.client'))
+    addPlugin(resolve('./runtime/plugins/index.client'))
     addImportsDir(resolve('./runtime/utils'))
     addImportsDir(resolve('./runtime/composables'))
 

@@ -1,17 +1,8 @@
-import type { Peer } from 'peerjs'
-import type { NPeer } from '../utils/NPeerjs'
+import type { SimplePeer } from '../utils'
 
 declare module '#app' {
   interface NuxtApp {
-    $peerjs: {
-      peer: Peer | null
-      nPeers: Map<string, NPeer>
-      connected: Ref<boolean>
-      init: (uid: string) => void
-      end: () => void
-      addNPeer: (id: string) => NPeer
-      removeNPeer: (id: string) => void
-    }
+    $peerjs: SimplePeer
   }
 }
 

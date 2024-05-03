@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3> Connected to server: {{ $peerjs.connected }}</h3>
+    <h3> Connected to server: {{ !$peerjs.peer?.disconnected }}</h3>
     <h4>Local Peer ID: {{ $peerjs.peer?.id }}</h4>
     <button @click="$peerjs.end()">
       End
@@ -43,19 +43,19 @@
 </template>
 
 <script setup lang="ts">
-import type { NPeer } from '../src/runtime/utils/NPeerjs'
+import type { SimplePeerData } from '../src/runtime/utils'
 import { useNuxtApp, ref } from '#imports'
 
 const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
 const message = ref()
 const reception = ref()
-const connection = ref('offline')
+const connection = ref(false)
 
-let nPeer: NPeer | null = null
+let nPeer: SimplePeerData | null = null
 
 function add(id: string) {
-  nPeer = $peerjs.addNPeer(id)
+  nPeer = $peerjs.addPeerData(id)
   nPeer.connect()
   nPeer.onDataReceived((data) => {
     reception.value = data

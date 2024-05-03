@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, useNuxtApp } from '#imports'
 
 export default defineNuxtPlugin({
-  dependsOn: ['peerjs:init'],
+  dependsOn: ['peerjs'],
 
   setup() {
     const nuxtApp = useNuxtApp()
