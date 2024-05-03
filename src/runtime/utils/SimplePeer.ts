@@ -10,6 +10,7 @@ export interface SimplePeerOptions extends Partial<PeerOptions> {
   callingTimeoutMs: number
   connectIntervalMs: number
   rmVideoElId: string
+  lcVideoElId: string
 }
 
 interface Hooks {
@@ -47,6 +48,7 @@ export class SimplePeer {
     this.peerMedia = new SimplePeerMedia(this.#peer, {
       callingTimeoutMs: this.#options.callingTimeoutMs,
       rmVideoElId: this.#options.rmVideoElId,
+      lcVideoElId: this.#options.lcVideoElId,
       onStatusChange: status => this.hooks.callHook('media:status', status),
     })
 

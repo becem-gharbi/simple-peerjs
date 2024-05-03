@@ -34,8 +34,14 @@
       Hang
     </button>
     <br>
+    <h4>Remote</h4>
     <video
       id="peerjs-rm-video"
+      autoplay
+    />
+    <h4>Local</h4>
+    <video
+      id="peerjs-lc-video"
       autoplay
     />
   </div>

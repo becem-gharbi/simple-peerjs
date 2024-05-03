@@ -17,6 +17,7 @@ export default defineNuxtModule<ModuleOptions>({
     callingTimeoutMs: 10000,
     connectIntervalMs: 5000,
     rmVideoElId: 'peerjs-rm-video',
+    lcVideoElId: 'peerjs-lc-video',
   },
 
   setup(_options, _nuxt) {

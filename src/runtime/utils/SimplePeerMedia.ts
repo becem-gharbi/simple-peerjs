@@ -4,6 +4,7 @@ type MediaStatus = 'active' | 'inactive' | 'calling' | 'waiting'
 
 export interface SimplePeerMediaOptions {
   rmVideoElId: string
+  lcVideoElId: string
   callingTimeoutMs: number
   onStatusChange: (status: MediaStatus) => Promise<void> | void
 }
@@ -97,16 +98,19 @@ export class SimplePeerMedia {
     //* Maybe set media to active
   }
 
-  #getUserMedia() {
-    return navigator.mediaDevices.getUserMedia(this.constraints)
-  }
-
   #changeStatus(status: MediaStatus) {
     this.status = status
     this.#options.onStatusChange(status)
   }
 
+  async #getUserMedia() {
+    const stream = await navigator.mediaDevices.getUserMedia(this.constraints)
+    this.#renderVideo(this.#options.lcVideoElId, stream)
+    return stream
+  }
+
   #clearUserMedia() {
+    this.#renderVideo(this.#options.lcVideoElId, null)
     this.#lcMediaStream?.getTracks().forEach((track) => {
       if (track.readyState === 'live') {
         track.stop()
