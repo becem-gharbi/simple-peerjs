@@ -1,19 +1,9 @@
-import type { Peer, DataConnection } from 'peerjs'
+import type { SimplePeer, SimplePeerOptions } from '../utils'
 
 declare module '#app' {
   interface NuxtApp {
-    $peerjs: {
-      init: (uid: string) => void
-      end: () => void
-      connected: Ref<boolean>
-      connections: Map<string, DataConnection>
-      readonly peer: Peer | null
-    }
+    $peerjs: SimplePeer
   }
 }
 
-export interface PublicConfig {
-  host: string
-  path: string
-  port: number
-}
+export interface PublicConfig extends SimplePeerOptions {}

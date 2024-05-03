@@ -14,6 +14,8 @@ export default defineNuxtModule<ModuleOptions>({
     host: '0.peerjs.com',
     path: '/',
     port: 443,
+    rmVideoElId: 'peerjs-rm-video',
+    lcVideoElId: 'peerjs-lc-video',
   },
 
   setup(_options, _nuxt) {
@@ -22,15 +24,11 @@ export default defineNuxtModule<ModuleOptions>({
     _nuxt.options.runtimeConfig = defu(_nuxt.options.runtimeConfig, {
       app: {},
       public: {
-        peerjs: {
-          host: _options.host,
-          path: _options.path,
-          port: _options.port,
-        },
+        peerjs: _options,
       },
     })
 
-    addPlugin(resolve('./runtime/plugins/init.client'))
+    addPlugin(resolve('./runtime/plugins/index.client'))
     addImportsDir(resolve('./runtime/utils'))
     addImportsDir(resolve('./runtime/composables'))
 
