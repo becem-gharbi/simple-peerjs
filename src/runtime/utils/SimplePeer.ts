@@ -21,7 +21,7 @@ interface Hooks {
 }
 
 const CONNECT_INTERVAL_MS = 5000
-const CALLING_INTERVAL_MS = 15000
+const CALLING_TIMEOUT_MS = 15000
 
 export class SimplePeer {
   lcPeerId: Peer['id'] | null
@@ -49,7 +49,7 @@ export class SimplePeer {
     this.lcPeerId = lcPeerId
 
     this.peerMedia = new SimplePeerMedia(this.#peer, {
-      callingTimeoutMs: this.#options.callingTimeoutMs ?? CALLING_INTERVAL_MS,
+      callingTimeoutMs: this.#options.callingTimeoutMs ?? CALLING_TIMEOUT_MS,
       rmVideoElId: this.#options.rmVideoElId,
       lcVideoElId: this.#options.lcVideoElId,
       onStatusChange: status => this.hooks.callHook('media:status', status),
