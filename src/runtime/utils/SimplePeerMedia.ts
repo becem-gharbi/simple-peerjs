@@ -10,6 +10,7 @@ export interface SimplePeerMediaOptions {
 
 export class SimplePeerMedia {
   status: MediaStatus
+  constraints?: MediaStreamConstraints
   #peer: Peer
   #rmMediaConnection: MediaConnection | null
   #lcMediaConnection: MediaConnection | null
@@ -19,6 +20,19 @@ export class SimplePeerMedia {
 
   constructor(peer: Peer, opts: SimplePeerMediaOptions) {
     this.status = 'inactive'
+    this.constraints = {
+      video: {
+        facingMode: 'user',
+        width: {
+          ideal: window.innerWidth,
+        },
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
+    }
+
     this.#peer = peer
     this.#rmMediaConnection = null
     this.#lcMediaConnection = null
@@ -84,18 +98,7 @@ export class SimplePeerMedia {
   }
 
   #getUserMedia() {
-    return navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-        width: {
-          ideal: window.innerWidth,
-        },
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-      },
-    })
+    return navigator.mediaDevices.getUserMedia(this.constraints)
   }
 
   #changeStatus(status: MediaStatus) {

@@ -50,16 +50,20 @@ const rmPeerId = ref()
 const message = ref()
 const reception = ref()
 const rmPeerConnected = ref(false)
-const status = ref()
+const status = ref('offline')
 
 let nPeer: SimplePeerData | null = null
 
+$peerjs.hooks.hook('data:received', (id, data) => {
+  reception.value = data
+})
+
+$peerjs.hooks.hook('media:status', (s) => {
+  status.value = s
+})
+
 function add(id: string) {
   nPeer = $peerjs.addPeerData(id, { metadata: { from: id } })
-
-  $peerjs.hooks.hook('data:received', (id, data) => {
-    reception.value = data
-  })
 
   nPeer.rmDataConnection?.on('open', () => {
     rmPeerConnected.value = true
