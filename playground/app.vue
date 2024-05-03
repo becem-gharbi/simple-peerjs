@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3> Connected to server: {{ !$peerjs.peer?.disconnected }}</h3>
-    <h4>Local Peer ID: {{ $peerjs.peer?.id }}</h4>
+    <h3> Connected to server: {{ !$peerjs.connected }}</h3>
+    <h4>Local Peer ID: {{ $peerjs.lcPeerId }}</h4>
     <button @click="$peerjs.end()">
       End
     </button>
@@ -16,7 +16,7 @@
     <button @click="nPeer?.sendData(message)">
       Send
     </button>
-    <button @click="nPeer?.disconnect()">
+    <button @click="nPeer?.end()">
       End
     </button>
     <h4>Data received: {{ reception }}</h4>

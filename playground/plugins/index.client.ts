@@ -8,13 +8,12 @@ export default defineNuxtPlugin({
 
     nuxtApp.$peerjs.init(crypto.randomUUID())
 
-    nuxtApp.$peerjs.hooks.hook('data:connection', (metadata) => {
-      console.log('data:connection', metadata)
+    nuxtApp.$peerjs.hooks.hook('data:connection', (rmPeerId, metadata) => {
+      console.log('data:connection', rmPeerId, metadata)
     })
 
-    nuxtApp.$peerjs.hooks.hook('media:call', (metadata) => {
-      console.log('media:call', metadata)
-      throw new Error('unauthorized')
+    nuxtApp.$peerjs.hooks.hook('media:call', (rmPeerId, metadata) => {
+      console.log('media:call', rmPeerId, metadata)
     })
   },
 })

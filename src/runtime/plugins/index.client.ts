@@ -9,11 +9,9 @@ export default defineNuxtPlugin({
     const config = nuxtApp.$config.public.peerjs as PublicConfig
 
     const peerjs = new SimplePeer({
-      peer: {
-        path: config.path,
-        host: config.host,
-        port: config.port,
-      },
+      path: config.path,
+      host: config.host,
+      port: config.port,
     })
 
     return {

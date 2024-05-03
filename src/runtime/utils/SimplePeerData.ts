@@ -1,69 +1,70 @@
 import type { PeerConnectOption, DataConnection, Peer } from 'peerjs'
 import { defu } from 'defu'
 
-interface Options extends PeerConnectOption {
+export interface Options extends PeerConnectOption {
   connectIntervalMs?: number
 }
 
 export class SimplePeerData {
   rmPeerId: Peer['id']
-  #peer: Peer
   connected: boolean
   rmDataConnection: DataConnection | null
   lcDataConnection: DataConnection | null
+  #peer: Peer
   #connectInterval: NodeJS.Timeout | null
-  options: Options
+  #options: Options
 
   constructor(peer: Peer, rmPeerId: Peer['id'], opts?: Options) {
     this.rmPeerId = rmPeerId
-    this.#peer = peer
     this.connected = false
     this.rmDataConnection = null
     this.lcDataConnection = null
+    this.#peer = peer
     this.#connectInterval = null
 
-    this.options = defu(opts, {
+    this.#options = defu(opts, {
       connectIntervalMs: 5000,
     })
 
-    this.#init()
+    this.#connect()
+    this.#setConnectInterval()
   }
 
-  #init() {
-    const connect = () => {
-      this.rmDataConnection = this.#peer.connect(this.rmPeerId, this.options)
+  #connect() {
+    this.rmDataConnection = this.#peer.connect(this.rmPeerId, this.#options)
 
-      this.rmDataConnection?.on('open', () => {
-        this.connected = true
-      })
-      this.rmDataConnection?.on('close', () => {
-        this.connected = false
-        if (this.#connectInterval) {
-          clearInterval(this.#connectInterval)
-        }
-      })
-    }
+    this.rmDataConnection?.on('open', () => {
+      this.connected = true
+    })
 
-    connect()
-
-    this.#connectInterval = setInterval(() => {
-      if (!this.#peer.disconnected && this.connected === false) {
-        connect()
-      }
-    }
-    , this.options.connectIntervalMs)
+    this.rmDataConnection?.on('close', () => {
+      this.connected = false
+      this.#clearConnectInterval()
+    })
   }
 
   end() {
-    if (this.#connectInterval) {
-      clearInterval(this.#connectInterval)
-      this.#connectInterval = null
-    }
+    this.#clearConnectInterval()
     this.rmDataConnection?.close()
     this.lcDataConnection?.close()
   }
 
   async sendData(data: unknown, chunked?: boolean) {
-    await this.lcDataConnection?.send(data, chunked)
+    return this.lcDataConnection?.send(data, chunked)
+  }
+
+  #setConnectInterval() {
+    this.#connectInterval = setInterval(() => {
+      if (!this.#peer.disconnected && this.connected === false) {
+        this.#connect()
+      }
+    }, this.#options.connectIntervalMs)
+  }
+
+  #clearConnectInterval() {
+    if (this.#connectInterval) {
+      clearInterval(this.#connectInterval)
+      this.#connectInterval = null
+    }
   }
 }
