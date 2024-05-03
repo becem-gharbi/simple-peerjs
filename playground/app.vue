@@ -11,7 +11,7 @@
     <button @click="add(rmPeerId)">
       Connect
     </button>
-    <h4>Connected to remote Peer: {{ connection }} </h4>
+    <h4>Connected to remote Peer: {{ rmPeerConnected }} </h4>
     <input v-model="message">
     <button @click="nPeer?.sendData(message)">
       Send
@@ -22,23 +22,22 @@
     <h4>Data received: {{ reception }}</h4>
     <hr>
 
-    <!-- <h4>Streaming: {{ streaming }}</h4>
-    <h4>Calling: {{ calling }}</h4>
+    <h4>Status: {{ $peerjs.peerMedia?.status }}</h4>
     <input v-model="rmPeerId">
-    <button @click="call(rmPeerId)">
+    <button @click="$peerjs.peerMedia?.startCall(rmPeerId)">
       Call
     </button>
-    <button @click="answer()">
+    <button @click="$peerjs.peerMedia?.acceptCall()">
       Answer
     </button>
-    <button @click="end()">
+    <button @click="$peerjs.peerMedia?.endCall()">
       Hang
     </button>
     <br>
     <video
-      id="stream"
+      id="peerjs-rm-video"
       autoplay
-    /> -->
+    />
   </div>
 </template>
 
@@ -50,18 +49,21 @@ const { $peerjs } = useNuxtApp()
 const rmPeerId = ref()
 const message = ref()
 const reception = ref()
-const connection = ref(false)
+const rmPeerConnected = ref(false)
 
 let nPeer: SimplePeerData | null = null
 
 function add(id: string) {
   nPeer = $peerjs.addPeerData(id)
   nPeer.connect()
-  nPeer.onDataReceived((data) => {
+  nPeer.rmDataConnection?.on('data', (data) => {
     reception.value = data
   })
-  nPeer.onConnectionChange((conn) => {
-    connection.value = conn
+  nPeer.rmDataConnection?.on('open', () => {
+    rmPeerConnected.value = true
+  })
+  nPeer.rmDataConnection?.on('close', () => {
+    rmPeerConnected.value = false
   })
 }
 </script>

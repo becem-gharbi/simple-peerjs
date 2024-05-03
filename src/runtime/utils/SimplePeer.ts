@@ -9,22 +9,31 @@ interface Options {
 
 export class SimplePeer {
   peer: Peer | null
+  connected: boolean
   peerMedia: SimplePeerMedia | null
   peerDataMap: Map<Peer['id'], SimplePeerData>
-  options: Options | undefined
+  #options: Options | undefined
   #lcDataConnectionMap: Map<Peer['id'], DataConnection>
 
   constructor(opts?: Options) {
+    this.connected = false
     this.peerDataMap = new Map()
     this.#lcDataConnectionMap = new Map()
     this.peer = null
     this.peerMedia = null
-    this.options = opts
+    this.#options = opts
   }
 
   init(lcPeerId: Peer['id']) {
-    this.peer = new Peer(lcPeerId, this.options?.peer)
+    this.peer = new Peer(lcPeerId, this.#options?.peer)
     this.peerMedia = new SimplePeerMedia(this.peer)
+
+    this.peer.on('open', () => {
+      this.connected = true
+    })
+    this.peer.on('disconnected', () => {
+      this.connected = false
+    })
 
     this.peer.on('connection', (lcDataConnection) => {
       const rmPeerId = lcDataConnection.peer
