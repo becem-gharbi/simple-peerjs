@@ -9,6 +9,12 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "homepage": "https://simpler-peerjs.vercel.app",
+  "keywords": [
+    "peerjs",
+    "webRTC",
+    "chat",
+    "realtime"
+  ],
   "repository": {
     "url": "https://github.com/becem-gharbi/simpler-peerjs"
   },
