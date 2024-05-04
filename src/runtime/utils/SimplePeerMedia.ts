@@ -1,4 +1,5 @@
 import type { CallOption, MediaConnection, Peer } from 'peerjs'
+import { defu } from 'defu'
 
 type MediaStatus = 'active' | 'inactive' | 'calling' | 'waiting'
 
@@ -21,19 +22,7 @@ export class SimplePeerMedia {
 
   constructor(peer: Peer, opts: SimplePeerMediaOptions) {
     this.status = 'inactive'
-    this.constraints = {
-      video: {
-        facingMode: 'user',
-        width: {
-          ideal: window.innerWidth,
-        },
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-      },
-    }
-
+    this.constraints = {}
     this.#peer = peer
     this.#rmMediaConnection = null
     this.#lcMediaConnection = null
@@ -104,10 +93,24 @@ export class SimplePeerMedia {
   }
 
   async #getUserMedia() {
-    const stream = await navigator.mediaDevices.getUserMedia(this.constraints)
+    const constraints = defu(this.constraints, {
+      video: {
+        facingMode: 'user',
+        width: {
+          ideal: window.innerWidth,
+        },
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+      },
+    })
+
+    const stream = await navigator.mediaDevices.getUserMedia(constraints)
     if (this.#options.lcVideoElId) {
       this.#renderVideo(this.#options.lcVideoElId, stream)
     }
+
     return stream
   }
 
@@ -128,7 +131,7 @@ export class SimplePeerMedia {
       videoEl.srcObject = stream
     }
     else {
-      throw new Error(`Could not find video element with id ${videoElId}`)
+      throw new Error(`Please make sure to add video element with id ${videoElId}`)
     }
   }
 
