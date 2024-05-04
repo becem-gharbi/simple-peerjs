@@ -1,6 +1,33 @@
 # Changelog
 
 
+## v0.1.2
+
+[compare changes](https://github.com/becem-gharbi/simpler-peerjs/compare/v0.1.1...v0.1.2)
+
+### 🩹 Fixes
+
+- Fix pkg exports ([d09ae4a](https://github.com/becem-gharbi/simpler-peerjs/commit/d09ae4a))
+
+### 💅 Refactors
+
+- **playground:** Remove rmPeer instance ([3c56b66](https://github.com/becem-gharbi/simpler-peerjs/commit/3c56b66))
+
+### 📖 Documentation
+
+- Update README ([f3d7b67](https://github.com/becem-gharbi/simpler-peerjs/commit/f3d7b67))
+
+### 🏡 Chore
+
+- Publish on release ([c67f061](https://github.com/becem-gharbi/simpler-peerjs/commit/c67f061))
+- Add .example.env ([6176384](https://github.com/becem-gharbi/simpler-peerjs/commit/6176384))
+- Set config defaults ([71564a2](https://github.com/becem-gharbi/simpler-peerjs/commit/71564a2))
+- Set hompage and repo ([36861bf](https://github.com/becem-gharbi/simpler-peerjs/commit/36861bf))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.1.1
 
 [compare changes](https://github.com/becem-gharbi/simpler-peerjs/compare/v0.0.4...v0.1.1)
