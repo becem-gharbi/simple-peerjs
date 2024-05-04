@@ -107,6 +107,8 @@ The `simplePeer` triggers the following events that you can listen to via `simpl
 # Install dependencies
 pnpm i
 
+# rename .example.env to .env
+
 # Run peer server
 pnpm peer
 
