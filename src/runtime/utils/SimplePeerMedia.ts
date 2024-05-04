@@ -97,8 +97,10 @@ export class SimplePeerMedia {
   }
 
   #changeStatus(status: MediaStatus) {
-    this.status = status
-    this.#options.onStatusChange(status)
+    if (this.status !== status) {
+      this.status = status
+      this.#options.onStatusChange(status)
+    }
   }
 
   async #getUserMedia() {
