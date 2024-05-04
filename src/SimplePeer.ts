@@ -2,9 +2,9 @@ import { Peer } from 'peerjs'
 import { createHooks } from 'hookable'
 import type { DataConnection, PeerOptions } from 'peerjs'
 import type { Hookable } from 'hookable'
-import { SimplePeerMedia } from './SimplePeerMedia'
-import { SimplePeerData } from './SimplePeerData'
-import type { SimplePeerDataOptions } from './SimplePeerData'
+import { SimplePeerMedia } from './SimplePeerMedia.js'
+import { SimplePeerData } from './SimplePeerData.js'
+import type { SimplePeerDataOptions } from './SimplePeerData.js'
 
 export interface SimplePeerOptions extends Partial<PeerOptions> {
   rmVideoElId: string
