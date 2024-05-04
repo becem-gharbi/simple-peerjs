@@ -18,9 +18,9 @@ const hangBtn = document.getElementById("hang-btn") as HTMLButtonElement
 const peer = new SimplePeer({
   rmVideoElId: 'rm-video',
   lcVideoElId: 'lc-video',
-  host: import.meta.env.VITE_SIMPLE_PEER_HOST,
-  port: import.meta.env.VITE_SIMPLE_PEER_PORT,
-  path: import.meta.env.VITE_SIMPLE_PEER_PATH 
+  host: import.meta.env.VITE_SIMPLE_PEER_HOST ?? '0.peerjs.com',
+  port: import.meta.env.VITE_SIMPLE_PEER_PORT ?? 443,
+  path: import.meta.env.VITE_SIMPLE_PEER_PATH ?? '/'
 })
 
 peer.init(crypto.randomUUID())
