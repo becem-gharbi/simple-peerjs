@@ -43,6 +43,9 @@ export class SimplePeerMedia {
       this.#changeStatus('active')
       this.#clearCallingTimeout()
       this.#renderVideo(this.#options.rmVideoElId, stream)
+      if (this.#options.lcVideoElId) {
+        this.#renderVideo(this.#options.lcVideoElId, this.#lcMediaStream)
+      }
     })
 
     this.#lcMediaConnection.on('close', () => {
@@ -50,6 +53,9 @@ export class SimplePeerMedia {
       this.#clearCallingTimeout()
       this.#clearUserMedia()
       this.#renderVideo(this.#options.rmVideoElId, null)
+      if (this.#options.lcVideoElId) {
+        this.#renderVideo(this.#options.lcVideoElId, null)
+      }
     })
   }
 
@@ -63,6 +69,9 @@ export class SimplePeerMedia {
       this.#changeStatus('active')
       this.#clearCallingTimeout()
       this.#renderVideo(this.#options.rmVideoElId, stream)
+      if (this.#options.lcVideoElId) {
+        this.#renderVideo(this.#options.lcVideoElId, this.#lcMediaStream)
+      }
     })
 
     this.#rmMediaConnection.on('close', () => {
@@ -70,6 +79,9 @@ export class SimplePeerMedia {
       this.#clearCallingTimeout()
       this.#clearUserMedia()
       this.#renderVideo(this.#options.rmVideoElId, null)
+      if (this.#options.lcVideoElId) {
+        this.#renderVideo(this.#options.lcVideoElId, null)
+      }
     })
   }
 
@@ -106,18 +118,10 @@ export class SimplePeerMedia {
       },
     })
 
-    const stream = await navigator.mediaDevices.getUserMedia(constraints)
-    if (this.#options.lcVideoElId) {
-      this.#renderVideo(this.#options.lcVideoElId, stream)
-    }
-
-    return stream
+    return await navigator.mediaDevices.getUserMedia(constraints)
   }
 
   #clearUserMedia() {
-    if (this.#options.lcVideoElId) {
-      this.#renderVideo(this.#options.lcVideoElId, null)
-    }
     this.#lcMediaStream?.getTracks().forEach((track) => {
       if (track.readyState === 'live') {
         track.stop()
