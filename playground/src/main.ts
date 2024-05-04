@@ -1,5 +1,4 @@
 import { SimplePeer } from '../../src'
-import type { SimplePeerData } from '../../src'
 
 const lcPeerIdHeading = document.getElementById("lc-peer-id-heading") as HTMLHeadingElement
 const receivedDataHeading = document.getElementById("received-data-heading") as HTMLHeadingElement
@@ -19,14 +18,12 @@ const hangBtn = document.getElementById("hang-btn") as HTMLButtonElement
 const peer = new SimplePeer({
   rmVideoElId: 'rm-video',
   lcVideoElId: 'lc-video',
-  host: import.meta.env.VITE_SIMPLE_PEER_HOST ?? '0.peerjs.com',
-  port: import.meta.env.VITE_SIMPLE_PEER_PORT ?? 443,
-  path: import.meta.env.VITE_SIMPLE_PEER_PATH ?? '/'
+  host: import.meta.env.VITE_SIMPLE_PEER_HOST,
+  port: import.meta.env.VITE_SIMPLE_PEER_PORT,
+  path: import.meta.env.VITE_SIMPLE_PEER_PATH 
 })
 
 peer.init(crypto.randomUUID())
-
-let rmPeer: SimplePeerData | null = null
 
 lcPeerIdHeading.innerText = 'Local Peer Id: ' + peer.lcPeerId
 receivedDataHeading.innerText = 'Received data: '
@@ -34,12 +31,13 @@ receivedDataHeading.innerText = 'Received data: '
 setInterval(() => {
   mediaStatusHeading.innerText = 'Media status: ' + peer.peerMedia?.status
   serverConnectedHeading.innerText = 'Connected to server: ' + peer.connected
-  rmPeerConnectedHeading.innerText = 'Connected to remote peer: ' + (rmPeer?.connected ?? false)
+  const rmPeerConnected = peer.peerDataMap.get(rmPeerIdInput.value)?.connected ?? false
+  rmPeerConnectedHeading.innerText = 'Connected to remote peer: ' + rmPeerConnected
 }, 1000)
 
-rmPeerAddBtn.onclick = () => rmPeer = peer.addPeerData(rmPeerIdInput.value)
+rmPeerAddBtn.onclick = () => peer.addPeerData(rmPeerIdInput.value)
 
-sendDataBtn.onclick = () => rmPeer?.sendData(sendDataInput.value)
+sendDataBtn.onclick = () => peer.peerDataMap.get(rmPeerIdInput.value)?.sendData(sendDataInput.value)
 
 callBtn.onclick = () => peer.peerMedia?.startCall(rmPeerIdInput.value)
 
