@@ -8,6 +8,10 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "homepage": "https://simpler-peerjs.vercel.app",
+  "repository": {
+    "url": "https://github.com/becem-gharbi/simpler-peerjs"
+  },
   "exports": {
     ".": {
       "import": "./dist/index.js",
