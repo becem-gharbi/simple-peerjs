@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simpler Peerjs</title>
+  <style>
+    #media {
+      display: flex;
+      gap: 16px;
+    }
+
+    video {
+      border-left: 1px solid gray;
+      width: 360px;
+      height: 240px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h4 id="lc-peer-id-heading">;</h4>
+
+  <h4 id="server-connected-heading">;</h4>
+
+  <h4 id="rm-peer-connected-heading">;</h4>
+
+  <input id="rm-peer-id-input">
+
+  <button id="rm-peer-add-btn">Add remote Peer</button>
+
+  <br>
+  <br>
+
+  <input id="send-data-input">
+
+  <button id="send-data-btn">Send Data</button>
+
+  <h4 id="received-data-heading">;</h4>
+
+  <h4 id="media-status-heading">;</h4>
+
+  <button id="call-btn">Call</button>
+  <button id="answer-btn" hidden>Answer</button>
+  <button id="hang-btn" hidden>Hang</button>
+
+  <div id="media">
+    <div>
+      <h4>Local video</h4>
+      <video id="lc-video" autoplay></video>
+    </div>
+    <div>
+      <h4>Remote video</h4>
+      <video id="rm-video" autoplay></video>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

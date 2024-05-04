@@ -1,14 +1,15 @@
 {
+  "name": "playground",
   "private": true,
-  "name": "my-module-playground",
+  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "nuxi dev",
-    "peer": "node peer/index.mjs",
-    "build": "nuxi build",
-    "generate": "nuxi generate"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
-  "dependencies": {
-    "nuxt": "^3.11.2"
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.2.0"
   }
 }
