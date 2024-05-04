@@ -1,6 +1,6 @@
 {
   "name": "@bg-dev/simpler-peerjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Simpler Peerjs",
   "author": "Becem Gharbi",

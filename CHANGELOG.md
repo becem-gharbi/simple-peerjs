@@ -1,6 +1,34 @@
 # Changelog
 
 
+## v0.1.1
+
+[compare changes](https://github.com/becem-gharbi/simpler-peerjs/compare/v0.0.4...v0.1.1)
+
+### 🚀 Enhancements
+
+- Rewrite with global data & media connections + hooks ([#1](https://github.com/becem-gharbi/simpler-peerjs/pull/1))
+- Plain js source and playground ([#2](https://github.com/becem-gharbi/simpler-peerjs/pull/2))
+
+### 🩹 Fixes
+
+- Typo ([6ebb7e1](https://github.com/becem-gharbi/simpler-peerjs/commit/6ebb7e1))
+- Avoid duplicate status change ([f55a589](https://github.com/becem-gharbi/simpler-peerjs/commit/f55a589))
+- Display/clear local and remote video at the same time ([13ee0a5](https://github.com/becem-gharbi/simpler-peerjs/commit/13ee0a5))
+
+### 💅 Refactors
+
+- Merge media constraints with defaults ([a4de4f1](https://github.com/becem-gharbi/simpler-peerjs/commit/a4de4f1))
+
+### 🏡 Chore
+
+- Rename script run:peer to peer ([fd21095](https://github.com/becem-gharbi/simpler-peerjs/commit/fd21095))
+
+### ❤️ Contributors
+
+- Becem <becem.gharbi@live.com>
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.0.4
 
 [compare changes](https://github.com/becem-gharbi/nuxt-peerjs/compare/v0.0.3...v0.0.4)
