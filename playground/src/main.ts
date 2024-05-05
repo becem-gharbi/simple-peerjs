@@ -31,13 +31,13 @@ receivedDataHeading.innerText = 'Received data: '
 setInterval(() => {
   mediaStatusHeading.innerText = 'Media status: ' + peer.peerMedia?.status
   serverConnectedHeading.innerText = 'Connected to server: ' + peer.connected
-  const rmPeerConnected = peer.peerDataMap.get(rmPeerIdInput.value)?.connected ?? false
+  const rmPeerConnected = peer.getPeerData(rmPeerIdInput.value)?.connected ?? false
   rmPeerConnectedHeading.innerText = 'Connected to remote peer: ' + rmPeerConnected
 }, 1000)
 
 rmPeerAddBtn.onclick = () => peer.addPeerData(rmPeerIdInput.value)
 
-sendDataBtn.onclick = () => peer.peerDataMap.get(rmPeerIdInput.value)?.sendData(sendDataInput.value)
+sendDataBtn.onclick = () => peer.getPeerData(rmPeerIdInput.value)?.sendData(sendDataInput.value)
 
 callBtn.onclick = () => peer.peerMedia?.startCall(rmPeerIdInput.value)
 

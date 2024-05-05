@@ -55,7 +55,7 @@ simplePeer.addPeerData(rmPeerId);
 To get the added Peer data:
 
 ```ts
-simplePeer.peerDataMap.get(rmPeerId);
+simplePeer.getPeerData(rmPeerId);
 ```
 
 When a remote peer is no longer available unregister it. This will disconnect the local peer from the remote peer and clear the data connection.
@@ -67,7 +67,7 @@ simplePeer.removePeerData(rmPeerId);
 To send data to the remote peer:
 
 ```ts
-simplePeer.peerDataMap.get(rmPeerId).sendData("data");
+simplePeer.getPeerData(rmPeerId).sendData("data");
 ```
 
 To start a media call with the remote peer. The call will be auto-terminated when not accepted during timeout set by `callingTimeoutMs`.

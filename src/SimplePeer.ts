@@ -27,8 +27,8 @@ export class SimplePeer {
   lcPeerId: Peer['id'] | null
   connected: boolean
   peerMedia: SimplePeerMedia | null
-  peerDataMap: Map<Peer['id'], SimplePeerData>
   hooks: Hookable<Hooks>
+  #peerDataMap: Map<Peer['id'], SimplePeerData>
   #peer: Peer | null
   #lcDataConnectionMap: Map<Peer['id'], DataConnection>
   #options: SimplePeerOptions
@@ -37,8 +37,8 @@ export class SimplePeer {
     this.lcPeerId = null
     this.connected = false
     this.peerMedia = null
-    this.peerDataMap = new Map()
     this.hooks = createHooks()
+    this.#peerDataMap = new Map()
     this.#peer = null
     this.#lcDataConnectionMap = new Map()
     this.#options = opts
@@ -77,7 +77,7 @@ export class SimplePeer {
 
       this.hooks.callHook('data:connection', rmPeerId, lcDataConnection.metadata)
         .then(() => {
-          const peerData = this.peerDataMap.get(rmPeerId)
+          const peerData = this.#peerDataMap.get(rmPeerId)
           if (peerData) {
             peerData._lcDataConnection = lcDataConnection
             peerData._lcDataConnection.on('close', () => {
@@ -95,8 +95,8 @@ export class SimplePeer {
   end() {
     if (this.#peer && this.#peer.destroyed === false) {
       this.#peer.destroy()
-      this.peerDataMap.forEach(peerData => peerData._end())
-      this.peerDataMap.clear()
+      this.#peerDataMap.forEach(peerData => peerData._end())
+      this.#peerDataMap.clear()
       this.#lcDataConnectionMap.clear()
       this.hooks.removeAllHooks()
     }
@@ -107,7 +107,7 @@ export class SimplePeer {
       throw new Error('Please make sure to initialize local Peer')
     }
 
-    if (!this.peerDataMap.has(rmPeerId)) {
+    if (!this.#peerDataMap.has(rmPeerId)) {
       const peerData = new SimplePeerData(this.#peer, rmPeerId, {
         ...opts,
         connectIntervalMs: this.#options.connectIntervalMs ?? CONNECT_INTERVAL_MS,
@@ -125,15 +125,19 @@ export class SimplePeer {
         peerData._rmDataConnection?.emit('close')
       })
 
-      this.peerDataMap.set(rmPeerId, peerData)
+      this.#peerDataMap.set(rmPeerId, peerData)
     }
 
-    return this.peerDataMap.get(rmPeerId)!
+    return this.#peerDataMap.get(rmPeerId)
   }
 
   removePeerData(rmPeerId: Peer['id']) {
-    this.peerDataMap.get(rmPeerId)?._end()
-    this.peerDataMap.delete(rmPeerId)
+    this.#peerDataMap.get(rmPeerId)?._end()
+    this.#peerDataMap.delete(rmPeerId)
     this.#lcDataConnectionMap.delete(rmPeerId)
+  }
+
+  getPeerData(rmPeerId: Peer['id']) {
+    return this.#peerDataMap.get(rmPeerId)
   }
 }
