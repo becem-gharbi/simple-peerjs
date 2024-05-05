@@ -1,6 +1,36 @@
 # Changelog
 
 
+## v0.2.0
+
+[compare changes](https://github.com/becem-gharbi/simple-peerjs/compare/v0.1.2...v0.2.0)
+
+### 🚀 Enhancements
+
+- **SimplePeer:** Add `getPeerData` to abstract `peerDataMap` ([e7cac2e](https://github.com/becem-gharbi/simple-peerjs/commit/e7cac2e))
+
+### 🩹 Fixes
+
+- **SimplePeer:** Terminate when window closed ([2996ab9](https://github.com/becem-gharbi/simple-peerjs/commit/2996ab9))
+
+### 💅 Refactors
+
+- **SimplePeer:** Remove extra `removeAllHooks` as no handlers are added ([44a7384](https://github.com/becem-gharbi/simple-peerjs/commit/44a7384))
+
+### 🏡 Chore
+
+- Add keywords ([807fabc](https://github.com/becem-gharbi/simple-peerjs/commit/807fabc))
+- ⚠️  Rename pkg name to `@bg-dev/simple-peerjs` ([8bfbf1a](https://github.com/becem-gharbi/simple-peerjs/commit/8bfbf1a))
+- Remove homepage ([73522e0](https://github.com/becem-gharbi/simple-peerjs/commit/73522e0))
+
+#### ⚠️ Breaking Changes
+
+- ⚠️  Rename pkg name to `@bg-dev/simple-peerjs` ([8bfbf1a](https://github.com/becem-gharbi/simple-peerjs/commit/8bfbf1a))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.1.2
 
 [compare changes](https://github.com/becem-gharbi/simpler-peerjs/compare/v0.1.1...v0.1.2)
