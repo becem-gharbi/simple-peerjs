@@ -1,4 +1,4 @@
-# Simpler Peerjs
+# Simple Peerjs
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -13,7 +13,7 @@ The intended goal behind this work is to more simplify the usage by auto-handlin
 Install the package:
 
 ```bash
-npm i @bg-dev/simpler-peerjs
+npm i @bg-dev/simple-peerjs
 ```
 
 Instantiate a new `SimplePeer` instance and set config options which extends `Peer` [options](https://peerjs.com/docs/#api):
@@ -120,9 +120,9 @@ pnpm dev
 
 [MIT License](./LICENSE)
 
-[npm-version-src]: https://img.shields.io/npm/v/@bg-dev/simpler-peerjs/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-version-href]: https://npmjs.com/package/@bg-dev/simpler-peerjs
-[npm-downloads-src]: https://img.shields.io/npm/dt/@bg-dev/simpler-peerjs.svg?style=flat&colorA=18181B&colorB=28CF8D
-[npm-downloads-href]: https://npmjs.com/package/@bg-dev/simpler-peerjs
-[license-src]: https://img.shields.io/npm/l/@bg-dev/simpler-peerjs.svg?style=flat&colorA=18181B&colorB=28CF8D
-[license-href]: https://npmjs.com/package/@bg-dev/simpler-peerjs
+[npm-version-src]: https://img.shields.io/npm/v/@bg-dev/simple-peerjs/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-version-href]: https://npmjs.com/package/@bg-dev/simple-peerjs
+[npm-downloads-src]: https://img.shields.io/npm/dt/@bg-dev/simple-peerjs.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-downloads-href]: https://npmjs.com/package/@bg-dev/simple-peerjs
+[license-src]: https://img.shields.io/npm/l/@bg-dev/simple-peerjs.svg?style=flat&colorA=18181B&colorB=28CF8D
+[license-href]: https://npmjs.com/package/@bg-dev/simple-peerjs

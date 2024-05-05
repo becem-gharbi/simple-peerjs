@@ -1,14 +1,14 @@
 {
-  "name": "@bg-dev/simpler-peerjs",
+  "name": "@bg-dev/simple-peerjs",
   "version": "0.1.2",
   "type": "module",
-  "description": "Simpler Peerjs",
+  "description": "Simple Peerjs",
   "author": "Becem Gharbi",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "homepage": "https://simpler-peerjs.vercel.app",
+  "homepage": "https://simple-peerjs.vercel.app",
   "keywords": [
     "peerjs",
     "webRTC",
@@ -16,7 +16,7 @@
     "realtime"
   ],
   "repository": {
-    "url": "https://github.com/becem-gharbi/simpler-peerjs"
+    "url": "https://github.com/becem-gharbi/simple-peerjs"
   },
   "exports": {
     ".": {
