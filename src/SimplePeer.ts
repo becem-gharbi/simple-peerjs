@@ -98,7 +98,6 @@ export class SimplePeer {
       this.#peerDataMap.forEach(peerData => peerData._end())
       this.#peerDataMap.clear()
       this.#lcDataConnectionMap.clear()
-      this.hooks.removeAllHooks()
     }
   }
 
