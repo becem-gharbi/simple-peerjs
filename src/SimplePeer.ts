@@ -55,6 +55,8 @@ export class SimplePeer {
       onStatusChange: status => this.hooks.callHook('media:status', status),
     })
 
+    window.addEventListener('unload', () => this.end())
+
     this.#peer.on('call', (mediaConnection) => {
       const rmPeerId = mediaConnection.peer
       this.hooks.callHook('media:call', rmPeerId, mediaConnection.metadata)
