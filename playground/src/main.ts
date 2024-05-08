@@ -20,7 +20,8 @@ const peer = new SimplePeer({
   lcVideoElId: 'lc-video',
   host: import.meta.env.VITE_SIMPLE_PEER_HOST ?? '0.peerjs.com',
   port: import.meta.env.VITE_SIMPLE_PEER_PORT ?? 443,
-  path: import.meta.env.VITE_SIMPLE_PEER_PATH ?? '/'
+  path: import.meta.env.VITE_SIMPLE_PEER_PATH ?? '/',
+  secure: import.meta.env.VITE_SIMPLE_PEER_SECURE === 'false' ? false: true
 })
 
 peer.init(crypto.randomUUID())
