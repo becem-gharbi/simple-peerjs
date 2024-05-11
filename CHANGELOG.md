@@ -1,6 +1,26 @@
 # Changelog
 
 
+## v0.2.1
+
+[compare changes](https://github.com/becem-gharbi/simple-peerjs/compare/v0.2.0...v0.2.1)
+
+### 🩹 Fixes
+
+- **SimplePeer:** Replace deprecated `unload` event with `pagehide` ([4792c4e](https://github.com/becem-gharbi/simple-peerjs/commit/4792c4e))
+
+### 💅 Refactors
+
+- **SimplePeer:** Increase default `connectIntervalMs` to 10 sec ([1ffdb19](https://github.com/becem-gharbi/simple-peerjs/commit/1ffdb19))
+
+### 🏡 Chore
+
+- **playground:** Add secure config option ([ffaa712](https://github.com/becem-gharbi/simple-peerjs/commit/ffaa712))
+
+### ❤️ Contributors
+
+- Becem-gharbi <becem.gharbi@live.com>
+
 ## v0.2.0
 
 [compare changes](https://github.com/becem-gharbi/simple-peerjs/compare/v0.1.2...v0.2.0)
