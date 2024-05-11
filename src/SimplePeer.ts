@@ -20,7 +20,7 @@ interface Hooks {
   'data:received': (rmPeerId: Peer['id'], data: unknown) => Promise<void> | void
 }
 
-const CONNECT_INTERVAL_MS = 5000
+const CONNECT_INTERVAL_MS = 10000
 const CALLING_TIMEOUT_MS = 15000
 
 export class SimplePeer {

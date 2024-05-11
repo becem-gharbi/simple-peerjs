@@ -23,7 +23,7 @@ const simplePeer = new SimplePeer({
   rmVideoElId: "rm-video",
   lcVideoElId: "lc-video",
   callingTimeoutMs: 15000,
-  connectIntervalMs: 5000,
+  connectIntervalMs: 10000,
 });
 ```
 
